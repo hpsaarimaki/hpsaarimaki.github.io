@@ -9,6 +9,8 @@ redirect_from:
 
 {% include base_path %}
 
+---
+
 #Teaching materials
 
 ---
