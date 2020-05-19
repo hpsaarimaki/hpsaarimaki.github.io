@@ -7,8 +7,6 @@ redirect_from:
   - /resume
 ---
 
-{% include base_path %}
-
 Education
 ======
 * PhD in Cognitive Neuroscience, Aalto University, Finland
