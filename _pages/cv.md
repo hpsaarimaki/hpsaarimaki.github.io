@@ -17,8 +17,8 @@ redirect_from:
 
 ## Employment
 
-2019-       **Academy of Finland Postdoctoral Fellow**, Human Information Processling Laboratory, Tampere University, Tampere, Finland <br>
-2019-2020   **Visiting Scholar**, Emotion and Social Cognition Lab, California Institute of Technology, Pasadena, California, USA <br>
+2019-&nbsp;&nbsp;&nbsp;&nbsp;   **Academy of Finland Postdoctoral Fellow**, Human Information Processling Laboratory, Tampere University, Finland <br>
+2019-2020   **Visiting Scholar**, Emotion and Social Cognition Lab, California Institute of Technology, USA <br>
 2018-2020   **Visiting Postdoctoral Scientist**, Brain and Mind Lab, Aalto University, Finland <br>
 2011-2018   **Doctoral Candidate**, Brain and Mind Lab, Aalto University, Finland
 
