@@ -11,12 +11,11 @@ You can also find my articles on <u><a href="{{author.googlescholar}}">my Google
 
 ## Preprints
 
-**Saarimäki H**, Glerean E, Smirnov D, Mynttinen H, Jääskeläinen IP, Sams M, Nummenmaa L. Classification of emotions based on functional connectivity patterns of the human brain. NeuroImage. [bioarxiv]
-
-Volynets S, Smirnov D, **Saarimäki H**, Nummenmaa L. Statistical pattern recognition reveals shared neural signatures for displaying and recognizing specific facial expressions. Neuroimage. [bioarxiv]
-
+**Saarimäki H**, Glerean E, Smirnov D, Mynttinen H, Jääskeläinen IP, Sams M, Nummenmaa L. Classification of emotions based on functional connectivity patterns of the human brain. [bioarxiv]
 
 ## Peer-reviewed publications
+
+Volynets S, Smirnov D, **Saarimäki H**, Nummenmaa L. Statistical pattern recognition reveals shared neural signatures for displaying and recognizing specific facial expressions. Social Cognitive and Affective Neuroscience 15:803-813.
 
 Smirnov D, **Saarimäki H**, Glerean E, Hari R, Sams M, Nummenmaa L (2019) Emotions amplify speaker-listener neural alignment. Human Brain Mapping 40:4777-4788.
 
