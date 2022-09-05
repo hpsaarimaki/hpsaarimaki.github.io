@@ -65,7 +65,7 @@ ggplot(data, aes(x=RT)) +
 # Laatikkokuvio:
 boxplot(RT~window_size, main="Reaktioaika koetilanteittain", ylab="Reaktioaika (ms)", xlab="Ikkunan koko")
 
-# Histogrammiesimerkki ggplot2:lla:
+# Laatikkokuvioesimerkki ggplot2:lla:
 ggplot(data, aes(x=window_size, y=RT, fill=window_size)) +
   geom_boxplot() +
   labs(y = "Reaktioaika (ms)", x = "Koetilanne") + 
