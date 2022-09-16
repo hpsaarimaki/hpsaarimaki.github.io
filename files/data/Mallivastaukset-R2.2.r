@@ -61,7 +61,7 @@ write.csv(keskiluvut, file="hitfeelshit1_keskiluvut.csv") # tallennetaan tiedost
 
 # Kysymys 6:
 hist(EPAMIELLYTTAVYYS)
-# Epämiellyttävyys on kohtuullisen normaalisti jakautunut.
+# Epämiellyttävyys ei vaikuta täysin normaalisti jakautuneelta. Tarkastellaan tätä lisää myöhemmin.
 
 # Kysymys 7:
 boxplot(EPAMIELLYTTAVYYS ~ RYHMA)
