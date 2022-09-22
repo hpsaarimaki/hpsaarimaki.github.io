@@ -65,7 +65,7 @@ plot(A2_is_norm, type="qq")
 A3_is_norm <- check_normality(A3)
 A3_is_norm
 plot(A3_is_norm, type="qq")
-# residuaalit ei normaalisti jakautuneet
+# residuaalit ovat normaalisti jakautuneet
 
 # Kysymys 3: varianssien yhtäsuuruus
 check_sphericity(A1)
@@ -125,11 +125,11 @@ ggplot(data, aes(x=VETO, y=EPAMIELLYTTAVYYS)) +
 
 # Tutkitaan tunnuslukuja:
 summary(A2)
-anova(A2)
+anova(A2, es="pes")
 
 # Harjoituksen aikaisen epämiellyttävyyden kokeminen ei muutu harjoittelun myötä (F(15,375)=1.36, p[GG]=.23).
-# Harjoituksen aikana epämiellyttävyys muuttuu (F(3,75)=59.4, p[GG]<.001, pes=.138).
-# Epämiellyttävyys muuttuu myös harjoituskertojen myötä (F(5,125)=6.4, p[GG]<.01, pes=.036).
+# Harjoituksen aikana epämiellyttävyys muuttuu (F(3,75)=59.4, p[GG]<.001, pes=.704).
+# Epämiellyttävyys muuttuu myös harjoituskertojen myötä (F(5,125)=6.4, p[GG]<.01, pes=.205).
 # Muutos harjoituksen aikana on suurempi kuin harjoituskertojen myötä tapahtuva muutos (ks. efektikoot).
 
 # Kysymys 9:
@@ -181,11 +181,11 @@ interaction.plot(VETO, HARJOITUS, EPAMIELLYTTAVYYS,
 # Kysymys 12:
 
 summary(A3)
-anova(A3)
+anova(A3, es="pes")
 
-# Ryhmät eroavat toisistaan vain harjoituskerran sisäisen muutoksen osalta (ryhmän ja vedon yhdysvaikutus, F(3, 72)=8.6, p[GG]<.01, pes=0.001).
+# Ryhmät eroavat toisistaan vain harjoituskerran sisäisen muutoksen osalta (ryhmän ja vedon yhdysvaikutus, F(3, 72)=8.6, p[GG]<.01, pes=0.26).
 # Epämiellyttävyyden muutos harjoituskerran sisällä riippuu siis ryhmästä.
-# Vedon päävaikutus on merkitsevä, eli harjoituskerran sisällä tapahtuu myös keskimäärin muutosta (F(3,72)=77.4, p[GG]<.001, pes=.18).
+# Vedon päävaikutus on merkitsevä, eli harjoituskerran sisällä tapahtuu myös keskimäärin muutosta (F(3,72)=77.4, p[GG]<.001, pes=.76).
 
 # Kysymys 13:
 
