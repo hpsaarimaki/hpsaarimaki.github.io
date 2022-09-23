@@ -77,7 +77,6 @@ check_sphericity(A3)
 # Varianssien yhtäsuuruusoletuksen saa korjattua sfäärisyyskorjauksilla
 # Mutta ryhmäkoot ovat varsin pieniä, vain 13 osallistujaa per ryhmä
 # Lisäksi normaalijakautuneisuusoletus on ongelma
-# Toistettujen mittausten varianssianalyysin sijaan kannattaisi harkita monitasoregressiomalleja
 
 # ---
 
@@ -103,9 +102,9 @@ ref1 <- emmeans(A1, specs="VETO")
 kontrasti_1 <- c(1,-0.33,-0.33,-0.33)
 
 # Testataan kontrastia:
-summary(contrast(ref1, list(first_vs_others = kontrasti_1), adjust="holm"))
+summary(contrast(ref1, list(first_vs_others = kontrasti_1)))
 
-# Ensimmäinen veto eroaa kaikista muista (t(25)=7.48, Bonferroni-Holm-korjattu p<.0001)
+# Ensimmäinen veto eroaa kaikista muista (t(25)=7.48, p<.0001)
 
 # Kysymys 7:
 
