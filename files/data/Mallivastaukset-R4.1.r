@@ -1,12 +1,12 @@
 # PSY204
 # Harjoitusmoniste R4.1
-# Heini SaarimÃ¤ki 21.9.2022
+# Heini Saarimäki 21.9.2022
 
 # ---
 
 # 1. Aineiston valmistelu
 
-# Asetetaan tyÃ¶skentelykansio:
+# Asetetaan työskentelykansio:
 setwd('C:/Users/sbhesa/Documents/Opetus')
 
 # Ladataan aineisto:
@@ -18,30 +18,30 @@ summary(data)
 
 # Kysymys 1:
 # Extra-muuttujassa on paljon puuttuvia arvoja, jotka on valmiiksi koodattu NA:lla.
-# Stress-muuttujan maksimiarvo on epÃ¤ilyttÃ¤vÃ¤n korkea.
+# Stress-muuttujan maksimiarvo on epäilyttävän korkea.
 # Tutkitaan Stress-muuttujaa tarkemmin laatikkokuviolla:
 boxplot(data$Stress)
-# Huomataan, ettÃ¤ arvo 999 poikkeaa muista arvoista huomattavasti.
-# EtsitÃ¤Ã¤n, millÃ¤ rivillÃ¤ arvo 999 datassa on:
+# Huomataan, että arvo 999 poikkeaa muista arvoista huomattavasti.
+# Etsitään, millä rivillä arvo 999 datassa on:
 which(data$Stress == 999)
-# Arvo 999 lÃ¶ytyy viideltÃ¤ riviltÃ¤.
+# Arvo 999 löytyy viideltä riviltä.
 
 # Kysymys 2:
 # Luodaan uusi tietokehys:
 data2 <- data
-# TehdÃ¤Ã¤n poikkeavien arvojen korjaus vain uudelle tietokehykselle data2.
-# Muutetaan poikkeavat arvot R:n ymmÃ¤rtÃ¤miksi puuttuviksi arvoiksi (NA):
+# Tehdään poikkeavien arvojen korjaus vain uudelle tietokehykselle data2.
+# Muutetaan poikkeavat arvot R:n ymmärtämiksi puuttuviksi arvoiksi (NA):
 data2[which(data2$Stress == 999),7] <- NA # huom. Stress-muuttuja sarakkeessa 7
 # Tarkastellaan muutoksen vaikutuksia:
 summary(data2)
 boxplot(data2$Stress)
-# HyvÃ¤ltÃ¤ nÃ¤yttÃ¤Ã¤!
+# Hyvältä näyttää!
 
 # Kysymys 3:
 # Voit tarvittaessa vertailla tekemiesi muutosten (esim. datamuunnokset)
 # vaikutusta analyysiesi tuloksiin.
 
-# KiinnitetÃ¤Ã¤n muokattu tietokehys:
+# Kiinnitetään muokattu tietokehys:
 detach() # irrotetaan mahdolliset aiemmat tietokehykset
 attach(data2)
 
@@ -67,8 +67,8 @@ hist(Entry)
 hist(Extra)
 hist(Stress)
 
-# Huomataan, ettÃ¤ muuttujan Extra jakauma on vino.
-# LisÃ¤ksi huomataan, ettÃ¤ muuttuja Educ on diskreetti. Opiskeluvuosien mÃ¤Ã¤rÃ¤ on mitattu kokonaisina vuosina.
+# Huomataan, että muuttujan Extra jakauma on vino.
+# Lisäksi huomataan, että muuttuja Educ on diskreetti. Opiskeluvuosien määrä on mitattu kokonaisina vuosina.
 
 # Kysymys 6:
 
@@ -76,11 +76,11 @@ hist(Stress)
 plot(Performance,Hours)
 plot(data2)
 
-# Loppukokeen arvosanan ja poissaolotuntien vÃ¤lillÃ¤ nÃ¤yttÃ¤Ã¤ olevan negatiivinen korrelaatio.
-# Loppukokeen arvosanan, kurssiarvioinnin ja stressin vÃ¤lillÃ¤ nÃ¤yttÃ¤Ã¤ olevan positiivinen korrelaatio.
-# Loppukokeen arvosanan ja alkutestin vÃ¤lillÃ¤ ei nÃ¤ytÃ¤ olevan voimakasta korrelaatiota.
+# Loppukokeen arvosanan ja poissaolotuntien välillä näyttää olevan negatiivinen korrelaatio.
+# Loppukokeen arvosanan, kurssiarvioinnin ja stressin välillä näyttää olevan positiivinen korrelaatio.
+# Loppukokeen arvosanan ja alkutestin välillä ei näytä olevan voimakasta korrelaatiota.
 # Opiskeluvuosien diskreetti asteikko tekee korrelaatioiden tulkinnasta hankalaa.
-# LisÃ¤harjoitusten vaikutusta on vaikea tulkita, koska aineistoa on niin vÃ¤hÃ¤n.
+# Lisäharjoitusten vaikutusta on vaikea tulkita, koska aineistoa on niin vähän.
 
 # ---
 
@@ -88,54 +88,54 @@ plot(data2)
 
 # 2.1 Pearson
 
-# Kahden muuttujan vÃ¤linen korrelaatio:
+# Kahden muuttujan välinen korrelaatio:
 cor.test(Performance, Hours)
 
-# Kahden muuttujan vÃ¤linen sirontakuvio:
+# Kahden muuttujan välinen sirontakuvio:
 plot(Performance, Hours)
 
 # Koko aineiston korrelaatiomatriisi:
 corr.test(data2)
 
 # Kysymys 7:
-# Seuraavat korrelaatiot eivÃ¤t ole merkitseviÃ¤ monivertailukorjausten jÃ¤lkeen:
-# Loppukokeen arvosana ja opiskeluvuodet, alkutestin tulos, lisÃ¤tehtÃ¤vien mÃ¤Ã¤rÃ¤ ja stressi eivÃ¤t korreloi.
-# Poissaolotunnit ja opiskeluvuosien lukumÃ¤Ã¤rÃ¤, alkutestin arvosana sekÃ¤ lisÃ¤tehtÃ¤vien mÃ¤Ã¤rÃ¤ eivÃ¤t korreloi.
-# Opiskeluvuosien lukumÃ¤Ã¤rÃ¤ korreloi vain poissaolotuntien kanssa.
-# Arviointi ja alkutestin tulos, lisÃ¤tehtÃ¤vien mÃ¤Ã¤rÃ¤ ja stressi eivÃ¤t korreloi.
+# Seuraavat korrelaatiot eivät ole merkitseviä monivertailukorjausten jälkeen:
+# Loppukokeen arvosana ja opiskeluvuodet, alkutestin tulos, lisätehtävien määrä ja stressi eivät korreloi.
+# Poissaolotunnit ja opiskeluvuosien lukumäärä, alkutestin arvosana sekä lisätehtävien määrä eivät korreloi.
+# Opiskeluvuosien lukumäärä korreloi vain poissaolotuntien kanssa.
+# Arviointi ja alkutestin tulos, lisätehtävien määrä ja stressi eivät korreloi.
 # Alkutesti korreloi vain poissaolotuntien ja opiskeluvuosien kanssa.
-# LisÃ¤tehtÃ¤vÃ¤t eivÃ¤t korreloi minkÃ¤Ã¤n muuttujien kanssa.
+# Lisätehtävät eivät korreloi minkään muuttujien kanssa.
 # Stressitaso korreloi vain poissaolotuntien kanssa.
 
 # Kysymys 8:
 # Maksimiotoskoko on 228, minimi 37.
-# Minimi koskee lisÃ¤tuntimuuttujaa, jossa oli vain vÃ¤hÃ¤n havaintoja.
-# LisÃ¤tunnit ei ole luotettava muuttuja, koska havaintoja on vain pieneltÃ¤ osajoukolta.
+# Minimi koskee lisätuntimuuttujaa, jossa oli vain vähän havaintoja.
+# Lisätunnit ei ole luotettava muuttuja, koska havaintoja on vain pieneltä osajoukolta.
 
 # Kysymys 9:
-# Ei pÃ¤de. Opiskeluvuodet, alkutestin tulos ja lisÃ¤tehtÃ¤vÃ¤t eivÃ¤t vaikuta suoritustasoon.
+# Ei päde. Opiskeluvuodet, alkutestin tulos ja lisätehtävät eivät vaikuta suoritustasoon.
 
 # Kysymys 10:
-# EivÃ¤t ole.
-# Poissaolotuntien lukumÃ¤Ã¤rÃ¤ korreloi negatiivisesti muiden muuttujien kanssa.
-# Samoin lisÃ¤tehtÃ¤vien mÃ¤Ã¤rÃ¤ korreloi negatiivisesti suoritustason, poissaolotuntien ja kurssin arvioinnin kanssa.
-# LisÃ¤tehtÃ¤vien mÃ¤Ã¤rÃ¤ ei kuitenkaan ole luotettava muuttuja, koska sillÃ¤ on paljon puuttuvia arvoja.
-# Emme tiedÃ¤ tarkasti, miksi tÃ¤llÃ¤ muuttujalla on paljon puuttuvia arvoja.
+# Eivät ole.
+# Poissaolotuntien lukumäärä korreloi negatiivisesti muiden muuttujien kanssa.
+# Samoin lisätehtävien määrä korreloi negatiivisesti suoritustason, poissaolotuntien ja kurssin arvioinnin kanssa.
+# Lisätehtävien määrä ei kuitenkaan ole luotettava muuttuja, koska sillä on paljon puuttuvia arvoja.
+# Emme tiedä tarkasti, miksi tällä muuttujalla on paljon puuttuvia arvoja.
 
 # -
 
 # 2.2 Spearman
 
-# Spearmanin korrelaatio kurssin loppuarvosanan ja poissaolotuntien vÃ¤lillÃ¤:
+# Spearmanin korrelaatio kurssin loppuarvosanan ja poissaolotuntien välillä:
 cor.test(Performance, Hours, method="spearman")
 
-# Testi antaa varoituksen, koska Hours-muuttujassa on useampia yhtÃ¤ suuria arvoja.
-# Siksi jÃ¤rjestyksen tarkka laskeminen ei onnistu. R ei huomioi yhtÃ¤ suuria arvoja.
+# Testi antaa varoituksen, koska Hours-muuttujassa on useampia yhtä suuria arvoja.
+# Siksi järjestyksen tarkka laskeminen ei onnistu. R ei huomioi yhtä suuria arvoja.
 
-# Varoituksen voi vÃ¤lttÃ¤Ã¤ nÃ¤in:
+# Varoituksen voi välttää näin:
 cor.test(Performance, Hours, method="spearman", exact=FALSE)
 
-# Huomataan, ettÃ¤ tulokset ovat samat.
+# Huomataan, että tulokset ovat samat.
 
 # Kysymys 10:
 corr.test(data2, method="spearman")
