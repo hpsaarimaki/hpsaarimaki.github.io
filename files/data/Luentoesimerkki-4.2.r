@@ -4,7 +4,7 @@
 
 # ---
 
-# Asetetaan työskentelykansio:
+# Asetetaan tyÃ¶skentelykansio:
 
 setwd("C:/Users/sbhesa/Documents/Opetus/PSY.204")
 
@@ -38,27 +38,27 @@ describe(tunteet)
 
 # Visualisoidaan aineistoa:
 
-par(mar=c(1,1,1,1)) # säädän marginaalien kokoa pienemmäksi
-plot(tunteet) # sirontakuvio kaikkien muuttujien välillä
+par(mar=c(1,1,1,1)) # sÃ¤Ã¤dÃ¤n marginaalien kokoa pienemmÃ¤ksi
+plot(tunteet) # sirontakuvio kaikkien muuttujien vÃ¤lillÃ¤
 
 par(mar=c(1,1,1,1))
-plot(tunteet[3:5]) # sirontakuvio kaikkien numeeristen muuttujien välillä
+plot(tunteet[3:5]) # sirontakuvio kaikkien numeeristen muuttujien vÃ¤lillÃ¤
 
-# Korrelaatiomatriisi numeeristen muuttujien välillä;
+# Korrelaatiomatriisi numeeristen muuttujien vÃ¤lillÃ¤;
 corr.test(tunteet[3:5]) 
 
-# Etsitään vierashavainto:
+# EtsitÃ¤Ã¤n vierashavainto:
 which(tunteet$aleksitymia > 100)
 which(tunteet$empatia > 100)
 
-# Poistetaan vierashavainto ja tallennetaan uutena tietokehyksenä:
+# Poistetaan vierashavainto ja tallennetaan uutena tietokehyksenÃ¤:
 tunteet_valmis <- tunteet[-38,]
 
-# Tarkastellaan uutta tietokehystä:
+# Tarkastellaan uutta tietokehystÃ¤:
 plot(tunteet_valmis[3:5])
 corr.test(tunteet_valmis[3:5])
 
-# Kiinnitetään lopullinen tietokehys:
+# KiinnitetÃ¤Ã¤n lopullinen tietokehys:
 detach()
 attach(tunteet_valmis)
 
@@ -70,7 +70,7 @@ attach(tunteet_valmis)
 # Empatian ja aleksitymian suhde sukupuolen mukaan:
 coplot(empatia ~ aleksitymia | sukupuoli)
 
-# Toinen vaihtoehto äskeisen kuvion piirtämiseen:
+# Toinen vaihtoehto Ã¤skeisen kuvion piirtÃ¤miseen:
 library(ggplot2)
 ggplot(tunteet_valmis, aes(x=aleksitymia, y=empatia)) +
   stat_smooth(method = "lm") + 
@@ -82,17 +82,17 @@ xyplot(empatia ~ aleksitymia | sukupuoli)
 
 # 3. Regressiomallin rakentaminen
 
-# Yksi selittävä muuttuja (tässä aleksitymia):
+# Yksi selittÃ¤vÃ¤ muuttuja (tÃ¤ssÃ¤ aleksitymia):
 malli1 <- lm(empatia ~ aleksitymia)
 summary(malli1) # tarkastellaan mallia
 
-# Kahden selittävän muuttujan päävaikutukset:
+# Kahden selittÃ¤vÃ¤n muuttujan pÃ¤Ã¤vaikutukset:
 malli2 <- lm(empatia ~ aleksitymia + tunnesanat)
 
-# Kahden selittävän muuttujan pää- ja yhdysvaikutukset:
+# Kahden selittÃ¤vÃ¤n muuttujan pÃ¤Ã¤- ja yhdysvaikutukset:
 malli3 <- lm(empatia ~ aleksitymia * tunnesanat)
 
-# Polynomiaalinen eli käyräviivainen suhde:
+# Polynomiaalinen eli kÃ¤yrÃ¤viivainen suhde:
 tunteet_valmis$aleksitymia2 <- aleksitymia^2
 malli4 <- lm(empatia ~ aleksitymia + aleksitymia2)
 
@@ -100,18 +100,18 @@ malli4 <- lm(empatia ~ aleksitymia + aleksitymia2)
 
 # 4. Oletusten tarkastelu
 
-# Näytetään diagnostiset kuviot mallille 1:
-layout(matrix(c(1,2,3,4),2,2)) # säätää kuvan asettelua
+# NÃ¤ytetÃ¤Ã¤n diagnostiset kuviot mallille 1:
+layout(matrix(c(1,2,3,4),2,2)) # sÃ¤Ã¤tÃ¤Ã¤ kuvan asettelua
 plot(malli1)
 
-# Cookin etäisyydet
+# Cookin etÃ¤isyydet
 influence.measures(malli1)
 
 # Homoskedastisuus
 library(car)
 ncvTest(malli1)
 
-# Jäännöstermien kuvaajat
+# JÃ¤Ã¤nnÃ¶stermien kuvaajat
 library(ggResidpanel)
 resid_panel(malli1)
 
@@ -127,7 +127,7 @@ anova(malli1)
 summary(malli2)
 
 # Diagnostiset kuviot:
-layout(matrix(c(1,2,3,4),2,2)) # säätää kuvan asettelua
+layout(matrix(c(1,2,3,4),2,2)) # sÃ¤Ã¤tÃ¤Ã¤ kuvan asettelua
 plot(malli2)
 
 # Multikolineaarisuus
