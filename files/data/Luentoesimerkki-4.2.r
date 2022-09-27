@@ -14,7 +14,7 @@ setwd("C:/Users/sbhesa/Documents/Opetus/PSY.204")
 
 # Ladataan aineisto
 
-tunteet <- read.csv('tas.csv', sep=";")
+tunteet <- read.csv('https://hpsaarimaki.github.io/file/data/tas.csv', sep=";")
 colnames(tunteet)[1] <- "id"
 
 # Tarkastellaan aineistoa
