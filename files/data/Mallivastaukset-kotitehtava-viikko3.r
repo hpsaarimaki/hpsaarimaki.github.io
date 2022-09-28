@@ -11,7 +11,7 @@
 setwd('C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/Materiaalit/Peltola et al 2018/')
 
 # Ladataan aineisto:
-peltola <- read.csv("https://hpsaarimaki.github.io/files/peltola/peltola_clean.csv", header=T)
+peltola <- read.csv("https://hpsaarimaki.github.io/files/data/peltola_clean.csv", header=T)
 
 # Tarkastellaan aineistoa:
 summary(peltola)
