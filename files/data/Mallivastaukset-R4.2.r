@@ -4,7 +4,7 @@
 
 # ---
 
-# Asetetaan työskentelykansio:
+# Asetetaan tyÃ¶skentelykansio:
 setwd("C:/Users/sbhesa/Documents/Opetus")
 
 # ---
@@ -18,14 +18,14 @@ library(nummenmaa)
 perso <- persoonallisuus
 summary(perso)
 
-# Vaihtoehto 2: lataa aineisto netistä
+# Vaihtoehto 2: lataa aineisto netistÃ¤
 perso <- read.csv("https://hpsaarimaki.github.io/files/data/persoonallisuus.csv")
 perso[1] <- NULL
 summary(perso)
 perso$SUKUP <- factor(perso$SUKUP)
 perso$KATISYYS <- factor(perso$KATISYYS)
 
-# Kiinnitetään aineisto
+# KiinnitetÃ¤Ã¤n aineisto
 attach(perso)
 
 # ---
@@ -36,7 +36,7 @@ attach(perso)
 library(psych)
 describe(perso)
 
-# Sirontakuvio kaikkien numeeristen muuttujien välillä:
+# Sirontakuvio kaikkien numeeristen muuttujien vÃ¤lillÃ¤:
 dev.new()
 plot(perso[3:20]) 
 
@@ -50,13 +50,13 @@ corr.test(perso[c(3,7:9,15:19)])
 # -
 
 # Kysymys 1:
-# Itsehillintä korreloi monivertailukorjauksen jälkeen vain ahdistuneisuuden, stressin, ja neurotisismin kanssa.
+# ItsehillintÃ¤ korreloi monivertailukorjauksen jÃ¤lkeen vain ahdistuneisuuden, stressin, ja neurotisismin kanssa.
 
 # -
 
 # Kysymys 2:
 # Ahdistuneisuuden ja neurotisismin, masennuksen ja stressin korrelaatiot ovat yli .60.
-# Myös masennus ja stressi (r = .63) ja stressi ja neurotisismi (r = .62) korreloivat.
+# MyÃ¶s masennus ja stressi (r = .63) ja stressi ja neurotisismi (r = .62) korreloivat.
 
 # - 
 
@@ -70,13 +70,13 @@ ggplot(perso, aes(x=AHDISTUNEISUUS, y=ITSEHILLINTA)) +
   geom_point() + 
   facet_wrap(~ SUKUP) 
 
-# Itsehillintä laskee ahdistuneisuuden myötä jyrkemmin miehillä kuin naisilla.
+# ItsehillintÃ¤ laskee ahdistuneisuuden myÃ¶tÃ¤ jyrkemmin miehillÃ¤ kuin naisilla.
 
 # -----
 
 # 3 Lineaarinen regressio
 
-# 3.1 Yhden selittävän muuttujan mallit:
+# 3.1 Yhden selittÃ¤vÃ¤n muuttujan mallit:
 
 # Tallennetaan malli 1:
 
@@ -88,10 +88,10 @@ malli_1 <- lm(ITSEHILLINTA ~ TUNNOLLISUUS)
 
 # Tarkastellaan oletuksia:
 plot(malli_1)
-# Lineaarisuusoletus täyttyy.
-# Residuaalien normaalisuusoletus täyttyy.
+# Lineaarisuusoletus tÃ¤yttyy.
+# Residuaalien normaalisuusoletus tÃ¤yttyy.
 # Residuaalien homoskedastistuus on ok.
-# Ei merkittäviä vierashavaintoja.
+# Ei merkittÃ¤viÃ¤ vierashavaintoja.
 # Huom. Otos melko pieni (N=80).
 
 # -
@@ -100,7 +100,7 @@ plot(malli_1)
 
 # Tarkastellaan mallia:
 summary(malli_1)
-# Tunnollisuus ei ennusta itsehillintää (F(1, 78)=0.001, p=.97).
+# Tunnollisuus ei ennusta itsehillintÃ¤Ã¤ (F(1, 78)=0.001, p=.97).
 
 # -
 
@@ -113,10 +113,10 @@ malli_2 <- lm(ITSEHILLINTA ~ NEUROTISISMI)
 
 # Tarkastellaan oletuksia:
 plot(malli_2)
-# Lineaarisuusoletus täyttyy.
+# Lineaarisuusoletus tÃ¤yttyy.
 # Residuaalien normaalisuusoletus ok.
-# Residuaalien homoskedastistuusoletus täyttyy.
-# Ei merkittäviä vierashavaintoja.
+# Residuaalien homoskedastistuusoletus tÃ¤yttyy.
+# Ei merkittÃ¤viÃ¤ vierashavaintoja.
 # Huom. Otos melko pieni (N=80).
 
 # - 
@@ -125,9 +125,9 @@ plot(malli_2)
 
 # Tarkastellaan mallia:
 summary(malli_2)
-# Neurotisismi ennustaa itsehillintää (R^2 = 0.28, F(1, 78)=30.7, p<.001).
-# Neurotisismi selittää siis 28% itsehillinnän vaihtelusta.
-# Kun neurotisismi kasvaa yhden pisteen, itsehillintä laskee 0.32 pistettä.
+# Neurotisismi ennustaa itsehillintÃ¤Ã¤ (R^2 = 0.28, F(1, 78)=30.7, p<.001).
+# Neurotisismi selittÃ¤Ã¤ siis 28% itsehillinnÃ¤n vaihtelusta.
+# Kun neurotisismi kasvaa yhden pisteen, itsehillintÃ¤ laskee 0.32 pistettÃ¤.
 
 # -
 
@@ -140,7 +140,7 @@ ggplot(perso, aes(x=NEUROTISISMI, y=ITSEHILLINTA)) +
 
 # ---
 
-# 3.2 Kahden selittävän muuttujan mallit:
+# 3.2 Kahden selittÃ¤vÃ¤n muuttujan mallit:
 
 # Tallennetaan malli 3:
 malli_3 <- lm(ITSEHILLINTA ~ NEUROTISISMI + AHDISTUNEISUUS)
@@ -151,10 +151,10 @@ malli_3 <- lm(ITSEHILLINTA ~ NEUROTISISMI + AHDISTUNEISUUS)
 
 # # Tarkastellaan oletuksia:
 plot(malli_3)
-# Lineaarisuusoletus täyttyy.
+# Lineaarisuusoletus tÃ¤yttyy.
 # Residuaalien normaalisuusoletus ok (muutama poikkeava havainto).
-# Residuaalien homoskedastistuusoletus täyttyy.
-# Ei merkittäviä vierashavaintoja.
+# Residuaalien homoskedastistuusoletus tÃ¤yttyy.
+# Ei merkittÃ¤viÃ¤ vierashavaintoja.
 # Huom. Otos melko pieni (N=80).
 
 # Multikollineaarisuus:
@@ -162,8 +162,8 @@ cor.test(NEUROTISISMI,AHDISTUNEISUUS)
 library(car)
 vif(malli_3)
 # Neurotisismi ja ahdistuneisuus korreloivat voimakkaasti (r=.84, p<.0001).
-# VIF-arvot silti hyväksyttävien rajoissa.
-# Huom. Tulkinnassa noudata varovaisuutta. Neurotisismi syö osan
+# VIF-arvot silti hyvÃ¤ksyttÃ¤vien rajoissa.
+# Huom. Tulkinnassa noudata varovaisuutta. Neurotisismi syÃ¶ osan
 # ahdistuneisuuden vaihtelusta.
 
 # -
@@ -172,8 +172,8 @@ vif(malli_3)
 
 # Tarkastellaan mallia:
 summary(malli_3)
-# Malli selittää 29% itsehillinnän vaihtelusta (muokattu R^2 = 0.29, F(2, 77)=17.4, p<.001)
-# Muuttujista vain neurotisismi ennustaa itsehillintää (beta_1 = -0.21).
+# Malli selittÃ¤Ã¤ 29% itsehillinnÃ¤n vaihtelusta (muokattu R^2 = 0.29, F(2, 77)=17.4, p<.001)
+# Muuttujista vain neurotisismi ennustaa itsehillintÃ¤Ã¤ (beta_1 = -0.21).
 
 # -
 
@@ -181,13 +181,13 @@ summary(malli_3)
 
 # Mallien vertailu:
 anova(malli_2, malli_3)
-# Ahdistuneisuuden lisääminen ei paranna mallia. Se voidaan jättää pois.
-# Isommalla otoskoolla ahdistuneisuus olisi todennäköisesti parantanut mallia
-# (tämä nähdään merkitsevää lähestyvästä p-arvosta).
+# Ahdistuneisuuden lisÃ¤Ã¤minen ei paranna mallia. Se voidaan jÃ¤ttÃ¤Ã¤ pois.
+# Isommalla otoskoolla ahdistuneisuus olisi todennÃ¤kÃ¶isesti parantanut mallia
+# (tÃ¤mÃ¤ nÃ¤hdÃ¤Ã¤n merkitsevÃ¤Ã¤ lÃ¤hestyvÃ¤stÃ¤ p-arvosta).
 
 # ---
 
-# 3.3 Useamman selittävän muuttujan mallit
+# 3.3 Useamman selittÃ¤vÃ¤n muuttujan mallit
 
 # Tallennetaan malli 4:
 malli_4 <- lm(ITSEHILLINTA ~ NEUROTISISMI + ULOSPAINSUUNT + AVOIMUUS + SOVINNOLLISUUS + TUNNOLLISUUS)
@@ -198,10 +198,10 @@ malli_4 <- lm(ITSEHILLINTA ~ NEUROTISISMI + ULOSPAINSUUNT + AVOIMUUS + SOVINNOLL
 
 # # Tarkastellaan oletuksia:
 plot(malli_4)
-# Lineaarisuusoletus täyttyy.
+# Lineaarisuusoletus tÃ¤yttyy.
 # Residuaalien normaalisuusoletus ok (muutama poikkeava havainto).
-# Residuaalien homoskedastistuusoletus täyttyy.
-# Ei merkittäviä vierashavaintoja.
+# Residuaalien homoskedastistuusoletus tÃ¤yttyy.
+# Ei merkittÃ¤viÃ¤ vierashavaintoja.
 # Huom. Otos melko pieni (N=80).
 
 # Multikollineaarisuus:
@@ -209,8 +209,8 @@ corr.test(perso[15:19])
 library(car)
 vif(malli_4)
 # Ei voimakkaita korrelaatioita.
-# Vain neurotisismi ja ulospäinsuuntautuneisuus korreloivat (r=-.33, p<.05).
-# VIF-arvot hyväksyttävien rajoissa.
+# Vain neurotisismi ja ulospÃ¤insuuntautuneisuus korreloivat (r=-.33, p<.05).
+# VIF-arvot hyvÃ¤ksyttÃ¤vien rajoissa.
 
 # -
 
@@ -218,8 +218,8 @@ vif(malli_4)
 
 # Tarkastellaan mallia:
 summary(malli_4)
-# Malli selittää 29% itsehillinnän vaihtelusta (muokattu R^2 = 0.27, F(5, 74)=6.84, p<.001)
-# Muuttujista vain neurotisismi ennustaa itsehillintää (beta_1 = -0.33).
+# Malli selittÃ¤Ã¤ 29% itsehillinnÃ¤n vaihtelusta (muokattu R^2 = 0.27, F(5, 74)=6.84, p<.001)
+# Muuttujista vain neurotisismi ennustaa itsehillintÃ¤Ã¤ (beta_1 = -0.33).
 
 # -
 
@@ -227,8 +227,8 @@ summary(malli_4)
 
 # Mallien vertailu:
 anova(malli_2, malli_4)
-# Muiden persoonallisuuspiirteiden lisääminen ei paranna mallia.
-# Vain neurotisismi ennustaa itsehillintää.
+# Muiden persoonallisuuspiirteiden lisÃ¤Ã¤minen ei paranna mallia.
+# Vain neurotisismi ennustaa itsehillintÃ¤Ã¤.
 
 # -
 
@@ -238,8 +238,8 @@ malli_5 <- lm(ITSEHILLINTA ~ NEUROTISISMI + MASENNUS + STRESSI)
 # -
 
 # Kysymys 15:
-# Ahdistuneisuuden osalta todettiin aiemmin, että se ei merkitsevästi ennusta itsehillintää.
-# Siksi se voidaan jättää jatkotarkasteluista pois.
+# Ahdistuneisuuden osalta todettiin aiemmin, ettÃ¤ se ei merkitsevÃ¤sti ennusta itsehillintÃ¤Ã¤.
+# Siksi se voidaan jÃ¤ttÃ¤Ã¤ jatkotarkasteluista pois.
 
 # -
 
@@ -247,20 +247,20 @@ malli_5 <- lm(ITSEHILLINTA ~ NEUROTISISMI + MASENNUS + STRESSI)
 
 # # Tarkastellaan oletuksia:
 plot(malli_5)
-# Lineaarisuusoletus täyttyy.
+# Lineaarisuusoletus tÃ¤yttyy.
 # Residuaalien normaalisuusoletus ok.
 # Residuaalien homoskedastistuusoletus ok.
-# Ei merkittäviä vierashavaintoja, mutta havainto 12 vetää aineistoa hieman vinoon.
+# Ei merkittÃ¤viÃ¤ vierashavaintoja, mutta havainto 12 vetÃ¤Ã¤ aineistoa hieman vinoon.
 # Huom. Otos melko pieni (N=80).
 
 # Multikollineaarisuus:
 corr.test(perso[c(8:9,15)])
 library(car)
 vif(malli_5)
-# Kaikkien muuttujien väliset korrelaatiot ovat melko voimakkaita.
-# VIF-arvot silti hyväksyttävien rajoissa.
-# Huom. Neurotisismi selittää osan mielialamuuttujien vaihtelusta, 
-# mikä täytyy huomioida tulosten tulkinnassa.
+# Kaikkien muuttujien vÃ¤liset korrelaatiot ovat melko voimakkaita.
+# VIF-arvot silti hyvÃ¤ksyttÃ¤vien rajoissa.
+# Huom. Neurotisismi selittÃ¤Ã¤ osan mielialamuuttujien vaihtelusta, 
+# mikÃ¤ tÃ¤ytyy huomioida tulosten tulkinnassa.
 
 # -
 
@@ -268,10 +268,10 @@ vif(malli_5)
 
 # Tarkastellaan mallia:
 summary(malli_5)
-# Malli selittää 36% itsehillinnän vaihtelusta (muokattu R^2 = 0.36, F(3, 76)=15.5, p<.001)
-# Muuttujista neurotisismi ja stressi ennustavat itsehillintää.
-# Kun neurotisismi kasvaa, itsehillintä laskee (beta_1 = -0.22).
-# Kun stressi kasvaa, itsehillintä laskee (beta_1 = -0.52).
+# Malli selittÃ¤Ã¤ 36% itsehillinnÃ¤n vaihtelusta (muokattu R^2 = 0.36, F(3, 76)=15.5, p<.001)
+# Muuttujista neurotisismi ja stressi ennustavat itsehillintÃ¤Ã¤.
+# Kun neurotisismi kasvaa, itsehillintÃ¤ laskee (beta_1 = -0.22).
+# Kun stressi kasvaa, itsehillintÃ¤ laskee (beta_1 = -0.52).
 
 # -
 
@@ -279,7 +279,7 @@ summary(malli_5)
 
 # Mallien vertailu:
 anova(malli_2, malli_5)
-# Stressin ja masennuksen lisääminen malliin parantaa mallia.
+# Stressin ja masennuksen lisÃ¤Ã¤minen malliin parantaa mallia.
 
 # -
 
