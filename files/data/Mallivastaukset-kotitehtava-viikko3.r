@@ -1,13 +1,13 @@
 # PSY204
-# Kotitehtävät 2
+# KotitehtÃ¤vÃ¤t 2
 # Mallivastaukset
-# Heini Saarimäki 16.9.2022
+# Heini SaarimÃ¤ki 16.9.2022
 
 # -----
 
 # 1. Aineiston valmistelu
 
-# Asetetaan työskentelykansio
+# Asetetaan tyÃ¶skentelykansio
 setwd('C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/Materiaalit/Peltola et al 2018/')
 
 # Ladataan aineisto:
@@ -26,7 +26,7 @@ peltola$condition <- factor(peltola$condition)
 summary(peltola)
 # Faktorit on nyt koodattu oikein.
 
-# Kiinnitetään aineisto:
+# KiinnitetÃ¤Ã¤n aineisto:
 attach(peltola)
 
 # 2. Kuvailevat tulokset
@@ -71,7 +71,7 @@ peltola %>%
   identify_outliers(N170)
 # ei vierashavaintoja
 
-# N170-muuttujassa ei ole merkitseviä vierashavaintoja.
+# N170-muuttujassa ei ole merkitseviÃ¤ vierashavaintoja.
 
 # Normaalijakautuneisuus:
 
@@ -82,18 +82,18 @@ library(performance)
 A1_is_norm <- check_normality(A1)
 A1_is_norm
 # residuaalit ei normaalisti jakautuneet
-# Tarkastellaan lisää:
+# Tarkastellaan lisÃ¤Ã¤:
 plot(A1_is_norm)
 plot(A1_is_norm, type="qq")
-# jäännöstermien jakauma on vino
+# jÃ¤Ã¤nnÃ¶stermien jakauma on vino
 
-# Varianssien yhtäsuuruus:
-# Tarvittaessa saataisiin esim. tällä funktiolla:
+# Varianssien yhtÃ¤suuruus:
+# Tarvittaessa saataisiin esim. tÃ¤llÃ¤ funktiolla:
 check_sphericity(A1)
 # Mallin riippumattomat muuttujat (condition, face_age ja facial_expression)
-# ovat kuitenkin kaksiluokkaisia, joten sfäärisyysoletus pätee aina.
-# Sfäärisyystesti lasketaan aina kaikille parittaisille luokkien eroille,
-# joten kaksiluokkaiselle muuttujalle sen laskemisesta ei ole hyötyä.
+# ovat kuitenkin kaksiluokkaisia, joten sfÃ¤Ã¤risyysoletus pÃ¤tee aina.
+# SfÃ¤Ã¤risyystesti lasketaan aina kaikille parittaisille luokkien eroille,
+# joten kaksiluokkaiselle muuttujalle sen laskemisesta ei ole hyÃ¶tyÃ¤.
 
 
 # ---
@@ -104,15 +104,15 @@ check_sphericity(A1)
 summary(A1)
 anova(A1, es="pes")
 
-# Vain päävaikutukset ovat merkitseviä:
+# Vain pÃ¤Ã¤vaikutukset ovat merkitseviÃ¤:
 # Hormonikonditio (OT vs plasebo), F(1,37)=7.31, p<.05, pes = 0.16)
-# Kasvojen ikä (aikuinen vs lapsi), F(1,37)=38.62, p<.001, pes = 0.51)
+# Kasvojen ikÃ¤ (aikuinen vs lapsi), F(1,37)=38.62, p<.001, pes = 0.51)
 # Kasvonilme (iloinen vs surullinen), F(1,37)=43.18, p<.001, pes = 0.54)
 
-# Post hoc -testejä ei tarvita, koska kaikki riippumattomat muuttujat
-# ovat kaksiluokkaisia. Tällöin koetilanteiden ero näkyy suoraan ANOVAsta.
+# Post hoc -testejÃ¤ ei tarvita, koska kaikki riippumattomat muuttujat
+# ovat kaksiluokkaisia. TÃ¤llÃ¶in koetilanteiden ero nÃ¤kyy suoraan ANOVAsta.
 
-# Yhteisvaikutukset eivät olleet tilastollisesti merkitseviä,
-# joten interaktiokuviota ei tehdä.
+# Yhteisvaikutukset eivÃ¤t olleet tilastollisesti merkitseviÃ¤,
+# joten interaktiokuviota ei tehdÃ¤.
 
 # -----
