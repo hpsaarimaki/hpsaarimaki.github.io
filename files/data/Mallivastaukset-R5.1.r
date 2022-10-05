@@ -1,6 +1,6 @@
 # Logistinen regressio
 # Harjoituksia
-# Heini Saarim‰ki 3.10.2022
+# Heini Saarim√§ki 3.10.2022
 
 # -----
 
@@ -26,7 +26,7 @@ titanic$Pclass <- factor(titanic$Pclass)
 titanic$Cabin <- factor(titanic$Cabin)
 titanic$Embarked <- factor(titanic$Embarked)
 
-# Tarkastellaan tietokehyst‰ uudestaan:
+# Tarkastellaan tietokehyst√§ uudestaan:
 summary(titanic)
 
 # Tarkistetaan kategoristen muuttujien dummy-koodaus:
@@ -37,17 +37,17 @@ contrasts(titanic$Pclass)
 # Puuttuvien havaintojen tarkastaminen:
 summary(titanic)
 
-# Ik‰ puuttuu monilta
+# Ik√§ puuttuu monilta
 library(Amelia)
 missmap(titanic, main="Puuttuvat vs havaitut arvot")
 
 # Hytti puuttuu monilta, poistetaan koko sarake:
 titanic$Cabin <- NULL
 
-# Korvataan puuttuvat i‰n arvot keskiarvolla:
+# Korvataan puuttuvat i√§n arvot keskiarvolla:
 titanic$Age[is.na(titanic$Age)] <- mean(titanic$Age,na.rm=T)
 
-# Poistetaan puuttuvat l‰htˆsataman arvot:
+# Poistetaan puuttuvat l√§ht√∂sataman arvot:
 titanic <- titanic[complete.cases(titanic), ]
 
 # -----
@@ -81,21 +81,21 @@ malli <- glm(Survived ~ Pclass + Sex + Age + SibSp + ParCh + Fare + Embarked, fa
 
 # 4. Oletusten tarkastelu
 
-# Otoskoko on riitt‰v‰:
+# Otoskoko on riitt√§v√§:
 nrow(opetus)
 
 # Multikollineaarisuus jatkuville muuttujille:
 corr.test(opetus[4:7])
-# Korrelaatioita on, mutta ne ovat melko pieni‰ (suurin r=.41)
+# Korrelaatioita on, mutta ne ovat melko pieni√§ (suurin r=.41)
 library(car)
 vif(malli)
-# Ei h‰lytt‰v‰‰ multikollinearisuutta
+# Ei h√§lytt√§v√§√§ multikollinearisuutta
 
 # -----
 
 # 5. Mallin tulkinta
 
-# 5.1 Yksitt‰isten selitt‰jien merkitys
+# 5.1 Yksitt√§isten selitt√§jien merkitys
 summary(malli)
 
 lippu_ja_luokka <- aov(Fare ~ Pclass, data=opetus)
@@ -133,17 +133,17 @@ print(paste('Tarkkuus:',1-luokitteluvirheet))
 
 # 5.5 Mallin tarkkuus ja herkkyys
 
-# Piirret‰‰n ROC-k‰yr‰:
+# Piirret√§√§n ROC-k√§yr√§:
 library(ROCR)
 pr <- prediction(ennusteet, testaus$Survived)
 prf <- performance(pr, measure = "tpr", x.measure = "fpr")
 plot(prf)
 
-# Lasketaan ROC-k‰yr‰n alapuolelle j‰‰v‰ pinta-ala:
+# Lasketaan ROC-k√§yr√§n alapuolelle j√§√§v√§ pinta-ala:
 auc <- performance(pr, measure = "auc")
 auc <- auc@y.values[[1]]
 auc
-# Arvo on l‰hell‰ yht‰, eli mallin ennustustarkkuus on hyv‰.
+# Arvo on l√§hell√§ yht√§, eli mallin ennustustarkkuus on hyv√§.
 
 # Ristiintaulukointi:
 testaus$Predicted <- factor(ennusteet)  
@@ -159,30 +159,30 @@ barplot(ennustejakauma, legend=TRUE,
 
 # 6. Harjoituksia
 
-# Teht‰v‰ 1:
+# Teht√§v√§ 1:
 
 # Luodaan uusi malli:
 malli_uusi <- glm(Survived ~ Pclass + ParCh, family=binomial, data=opetus)
 
 # -
 
-# Teht‰v‰ 2:
+# Teht√§v√§ 2:
 
-# Otoskoko on riitt‰v‰:
+# Otoskoko on riitt√§v√§:
 nrow(opetus)
 
-# VIF-arvot saadaan myˆs kategorisille muuttujille:
+# VIF-arvot saadaan my√∂s kategorisille muuttujille:
 vif(malli_uusi)
 
 # -
 
-# Teht‰v‰ 3:
+# Teht√§v√§ 3:
 
-# Yksitt‰iset ennustajat:
+# Yksitt√§iset ennustajat:
 summary(malli_uusi)
-# Molemmat muuttujat ennustavat selviytymist‰.
-# Mit‰ alempi lippuluokka, sit‰ ep‰todenn‰kˆisempi selviytyminen.
-# Jos laivalla mukana vanhemmat tai lapset, sit‰ todenn‰kˆisempi selviytyminen
+# Molemmat muuttujat ennustavat selviytymist√§.
+# Mit√§ alempi lippuluokka, sit√§ ep√§todenn√§k√∂isempi selviytyminen.
+# Jos laivalla mukana vanhemmat tai lapset, sit√§ todenn√§k√∂isempi selviytyminen
 
 # Mallin sopivuus:
 anova(malli_uusi, test="Chisq")
@@ -196,16 +196,16 @@ ennusteet_uusi <- ifelse(ennusteet_uusi > 0.5,1,0)
 luokitteluvirheet_uusi <- mean(ennusteet_uusi != testaus$Survived, na.rm=T)
 print(paste('Tarkkuus:',1-luokitteluvirheet_uusi))
 
-# Piirret‰‰n ROC-k‰yr‰:
+# Piirret√§√§n ROC-k√§yr√§:
 pr <- prediction(ennusteet_uusi, testaus$Survived)
 prf <- performance(pr, measure = "tpr", x.measure = "fpr")
 plot(prf)
 
-# Lasketaan ROC-k‰yr‰n alapuolelle j‰‰v‰ pinta-ala:
+# Lasketaan ROC-k√§yr√§n alapuolelle j√§√§v√§ pinta-ala:
 auc <- performance(pr, measure = "auc")
 auc <- auc@y.values[[1]]
 auc
-# Arvo on l‰hemp‰n‰ 0.5 kuin yht‰, eli ennustustarkkuus ei ole kovin hyv‰.
+# Arvo on l√§hemp√§n√§ 0.5 kuin yht√§, eli ennustustarkkuus ei ole kovin hyv√§.
 
 # Ristiintaulukointi:
 testaus$Predicted_uusi <- factor(ennusteet_uusi)  
@@ -217,12 +217,12 @@ round(ennustejakauma_uusi, 2)
 barplot(ennustejakauma_uusi, legend=TRUE, 
         xlab="Todellinen luokka", ylab="Ennuste")
 
-# Teht‰v‰ 5:
+# Teht√§v√§ 5:
 
 # Mallien vertailu
 library(AICcmodavg)
 aictab(cand.set = list(malli, malli_uusi), modnames = c("malli", "malli_uusi") )
 
-# Alkuper‰inen malli sopii aineistoon paremmin.
+# Alkuper√§inen malli sopii aineistoon paremmin.
 
 
