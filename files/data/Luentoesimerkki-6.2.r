@@ -1,7 +1,7 @@
 # PSY204 syksy 2022
 # Luento 6.1: Faktorianalyysi
 # Esimerkkiskripti
-# Heini Saarim‰ki 3.10.2022
+# Heini Saarim√§ki 3.10.2022
 # 
 # ----
 
@@ -9,7 +9,7 @@
 library(psych)
 library(GPArotation)
 
-# Asetetaan tyˆskentelykansio
+# Asetetaan ty√∂skentelykansio
 setwd("C:/Users/sbhesa/Documents/Opetus/")
 
 # ----
@@ -31,7 +31,7 @@ describe(bfi)
 sum(complete.cases(bfi[1:25]))
 dim(bfi)
 
-# Puuttuvia arvoja on n. 16%, mutta aineistoa on silti riitt‰v‰sti
+# Puuttuvia arvoja on n. 16%, mutta aineistoa on silti riitt√§v√§sti
 # faktorianalyysia varten.
 
 # Tarkastellaan muuttujien jakaumia:
@@ -49,16 +49,16 @@ ggcorr(bfi[1:25])
 # -
 
 # Aineiston faktoroitumisen arviointi:
-# Onko aineistossa lˆydett‰viss‰ merkityksellisi‰ latentteja faktoreita?
-# Eli sopiiko faktorianalyysi aineistolle ylip‰‰t‰‰n?
+# Onko aineistossa l√∂ydett√§viss√§ merkityksellisi√§ latentteja faktoreita?
+# Eli sopiiko faktorianalyysi aineistolle ylip√§√§t√§√§n?
 
 # Kaksi keinoa:
 
-# 1) Bartlettin sf‰‰risyystesti
+# 1) Bartlettin sf√§√§risyystesti
 
 cortest.bartlett(bfi[1:25])
 
-# Merkitsev‰ tulos (p<.05), eli ainakin jotkin muuttujat korreloivat kesken‰‰n.
+# Merkitsev√§ tulos (p<.05), eli ainakin jotkin muuttujat korreloivat kesken√§√§n.
 
 # 2) KMO
 
@@ -70,9 +70,9 @@ KMO(bfi[1:25])
 
 # 2. Faktorimallin suunnittelu
 
-# Faktorien m‰‰r‰n valinta
+# Faktorien m√§√§r√§n valinta
 
-# Kaksi menetelm‰‰:
+# Kaksi menetelm√§√§:
 
 # 1) Scree-kuvio
 
@@ -82,8 +82,8 @@ scree(bfi[,1:25])
 
 fa.parallel(bfi[1:25])
 
-# Kuudes faktori l‰hell‰ rajaa, joten ehk‰ halutaan
-# kokeilla sek‰ 5 ja 6 faktorin ratkaisuja.
+# Kuudes faktori l√§hell√§ rajaa, joten ehk√§ halutaan
+# kokeilla sek√§ 5 ja 6 faktorin ratkaisuja.
 
 # ---
 
