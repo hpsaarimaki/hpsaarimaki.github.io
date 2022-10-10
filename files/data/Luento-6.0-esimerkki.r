@@ -1,17 +1,17 @@
 # PSY204
-# Luento 6.0: Kommentteja lineaarisen regression kotiteht‰viin
-# Heini Saarim‰ki 9.10.2022
+# Luento 6.0: Kommentteja lineaarisen regression kotiteht√§viin
+# Heini Saarim√§ki 9.10.2022
 
 # ---
 
 # 1. Aineiston valmistelu
 
-# Asetetaan tyˆskentelykansio
-setwd("C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/Kotiteht‰v‰t")
+# Asetetaan ty√∂skentelykansio
+setwd("C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/Kotiteht√§v√§t")
 
 # Ladataan valmis aineisto:
 suvilehto <- read.csv('https://hpsaarimaki.github.io/files/data/suvilehto_clean.csv', sep=";")
-suvilehto$X <- NULL # poistan ylim‰‰r‰isen sarakkeen
+suvilehto$X <- NULL # poistan ylim√§√§r√§isen sarakkeen
 
 # Muutetaan faktorit faktoreiksi:
 suvilehto$subid <- factor(suvilehto$subid)
@@ -19,7 +19,7 @@ suvilehto$sex <- factor(suvilehto$sex)
 suvilehto$country <- factor(suvilehto$country)
 suvilehto$person <- factor(suvilehto$person)
 
-# Kiinnitet‰‰n aineisto:
+# Kiinnitet√§√§n aineisto:
 attach(suvilehto)
 
 # ---
@@ -33,7 +33,7 @@ suvilehto$facebin <- 0
 suvilehto[which(suvilehto$face>0),11] <- 1
 suvilehto[is.na(suvilehto$face),11] <- NA
 
-# K‰det
+# K√§det
 suvilehto$handbin <- 0
 suvilehto[which(suvilehto$hand>0),12] <- 1
 suvilehto[is.na(suvilehto$hand),12] <- NA
@@ -76,7 +76,7 @@ testaus <- suvilehto.logreg[6001:7379,]
 malli1 <- glm(facebin ~ country + bond, family=binomial, data=opetus)
 malli2 <- glm(facebin ~ country * bond, family=binomial, data=opetus)
 
-# Yksitt‰isten selitt‰jien merkitys
+# Yksitt√§isten selitt√§jien merkitys
 summary(malli1)
 summary(malli2)
 
@@ -87,7 +87,7 @@ anova(malli2, test="Chisq")
 # Mallien vertailu
 library(AICcmodavg)
 aictab(cand.set = list(malli1, malli2), modnames = c("malli1", "malli2") )
-# malli 2 eli yhdysvaikutukset sis‰lt‰v‰ malli on parempi
+# malli 2 eli yhdysvaikutukset sis√§lt√§v√§ malli on parempi
 
 # Mallin selitysaste
 # Nagelkerken pseudo-R^2
@@ -104,7 +104,7 @@ ennusteet2 <- ifelse(ennusteet2 > 0.5, 1, 0)
 # Luokitteluvirheet paremmalle mallille
 luokitteluvirheet <- mean(ennusteet2 != testaus$facebin, na.rm=T)
 print(paste("Tarkkuus:", 1-luokitteluvirheet))
-# virheit‰ n. 0.75
+# virheit√§ n. 0.75
 
 # Ristiintaulukointi:
 testaus$face_predicted <- factor(ennusteet2)  
@@ -119,11 +119,11 @@ barplot(ennustejakauma_face, legend=TRUE, main="Ennustejakauma: kasvot",
 
 # -
 
-# K‰det - sovitetaan malli:
+# K√§det - sovitetaan malli:
 malli3 <- glm(handbin ~ country + bond, family=binomial, data=opetus)
 malli4 <- glm(handbin ~ country * bond, family=binomial, data=opetus)
 
-# Yksitt‰isten selitt‰jien merkitys
+# Yksitt√§isten selitt√§jien merkitys
 summary(malli3)
 summary(malli4)
 
@@ -156,12 +156,12 @@ testaus$hand_predicted <- factor(ennusteet4)
 ennustejakauma_hand <-prop.table(table(testaus$hand_predicted,
                                        testaus$handbin),2)*100
 round(ennustejakauma_hand)
-# virheit‰ n. 0.74
+# virheit√§ n. 0.74
 
 #Kuvio:
-barplot(ennustejakauma_hand, legend=TRUE, main="Ennustejakauma: k‰det", 
+barplot(ennustejakauma_hand, legend=TRUE, main="Ennustejakauma: k√§det", 
         xlab="Todellinen luokka", ylab="Ennuste")
-# malli ennustaa aina, ett‰ k‰si‰ saa koskea (eli luokkaa 1)
+# malli ennustaa aina, ett√§ k√§si√§ saa koskea (eli luokkaa 1)
 
 
 # -
@@ -170,7 +170,7 @@ barplot(ennustejakauma_hand, legend=TRUE, main="Ennustejakauma: k‰det",
 malli5 <- glm(legbin ~ country + bond, family=binomial, data=opetus)
 malli6 <- glm(legbin ~ country * bond, family=binomial, data=opetus)
 
-# Yksitt‰isten selitt‰jien merkitys
+# Yksitt√§isten selitt√§jien merkitys
 summary(malli5)
 summary(malli6)
 
@@ -197,7 +197,7 @@ ennusteet6 <- ifelse(ennusteet6 > 0.5, 1, 0)
 luokitteluvirheet <- mean(ennusteet6 != testaus$legbin, na.rm=T)
 print(paste("Tarkkuus:", 1-luokitteluvirheet))
 1-luokitteluvirheet
-# virheit‰ n. 0.66
+# virheit√§ n. 0.66
 
 # Ristiintaulukointi:
 testaus$leg_predicted <- factor(ennusteet6)  
@@ -208,7 +208,7 @@ round(ennustejakauma_leg)
 #Kuvio:
 barplot(ennustejakauma_leg, legend=TRUE, main="Ennustejakauma: jalat", 
         xlab="Todellinen luokka", ylab="Ennuste")
-# Enemm‰n virheit‰ luokan 0 ennustamisessa
+# Enemm√§n virheit√§ luokan 0 ennustamisessa
 
 # ---
 
@@ -225,14 +225,14 @@ summary(malli.3)
 
 # Mallien vertailu
 anova(malli.1, malli.2)
-# kulttuurin ja siteen yhdysvaikutus ei en‰‰ merkitsev‰
+# kulttuurin ja siteen yhdysvaikutus ei en√§√§ merkitsev√§
 
 # -
 
-# K‰det - luodaan mallit:
+# K√§det - luodaan mallit:
 malli.3 <- lmer(hand ~ country + bond + (1 | subid), data=suvilehto)
 summary(malli.3)
-# kulttuuri ei merkitsev‰
+# kulttuuri ei merkitsev√§
 
 malli.4 <- lmer(hand ~ country * bond + (1 | subid), data=suvilehto)
 summary(malli.4)
@@ -240,7 +240,7 @@ anova(malli.4)
 
 # Mallien vertailu
 anova(malli.3, malli.4)
-# kulttuurin yhdysvaikutus ja p‰‰vaikutus t‰ss‰ merkitsev‰
+# kulttuurin yhdysvaikutus ja p√§√§vaikutus t√§ss√§ merkitsev√§
 
 # -
 
@@ -252,4 +252,4 @@ summary(malli.6)
 
 # Mallien vertailu
 anova(malli.5, malli.6)
-# kulttuurin ja tunnesiteen p‰‰vaikutus merkitsev‰
+# kulttuurin ja tunnesiteen p√§√§vaikutus merkitsev√§
