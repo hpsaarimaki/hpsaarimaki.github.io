@@ -1,14 +1,14 @@
 # PSY204 syksy 2022
-# Harjoitukset 7.1: Faktoreiden jatkokäyttö ja konfirmatorinen faktorianalyysi
+# Harjoitukset 7.1: Faktoreiden jatkokÃ¤yttÃ¶ ja konfirmatorinen faktorianalyysi
 # Mallivastaukset
-# Heini Saarimäki 25.10.2022
+# Heini SaarimÃ¤ki 25.10.2022
 # 
 # ----
 
 # Ladataan tarvittavat kirjastot
 library(lavaan)
 
-# Asetetaan työskentelykansio
+# Asetetaan tyÃ¶skentelykansio
 setwd("C:/Users/sbhesa/Documents/Opetus/")
 
 # ---
@@ -17,7 +17,7 @@ setwd("C:/Users/sbhesa/Documents/Opetus/")
 library(psych)
 library(GPArotation)
 
-# Asetetaan työskentelykansio
+# Asetetaan tyÃ¶skentelykansio
 setwd("C:/Users/sbhesa/Documents/Opetus/")
 
 # ---
@@ -35,7 +35,7 @@ summary(tas)
 describe(tas)
 anyNA(tas) 
 
-# Kiinnitetään tietokehys
+# KiinnitetÃ¤Ã¤n tietokehys
 attach(tas)
 
 # ---
@@ -54,16 +54,16 @@ fa3 <- fa(tas[1:20],
 # Visuaalinen tarkastelu:
 fa.diagram(fa3)
 
-# Varmista, että kaikki lataukset positiivisia eli että
-# aineistossa ei ole käänteisiä muuttujia jäljellä!
+# Varmista, ettÃ¤ kaikki lataukset positiivisia eli ettÃ¤
+# aineistossa ei ole kÃ¤Ã¤nteisiÃ¤ muuttujia jÃ¤ljellÃ¤!
 
 # ---
 
-# 3. Yhdistelmämuuttujat
+# 3. YhdistelmÃ¤muuttujat
 
 # 3.1 Summamuuttujat
 
-# Kokonaispistemäärä
+# KokonaispistemÃ¤Ã¤rÃ¤
 tas$TOTAL <- rowSums(tas[1:20])
 
 # Summamuuttujat
@@ -88,7 +88,7 @@ hist(tas$TOTAL)
 # Cronbachin alfat summamuuttujille:
 library(ltm)
 
-# Kokonaispistemäärä:
+# KokonaispistemÃ¤Ã¤rÃ¤:
 cronbach.alpha(tas[1:20], CI=TRUE)
 
 # Summamuuttujat:
@@ -98,9 +98,9 @@ cronbach.alpha(tas[c(5, 8, 10, 15, 16, 18, 19, 20)], CI=TRUE)
 
 # -
 
-# Faktoreiden jatkokäyttö:
+# Faktoreiden jatkokÃ¤yttÃ¶:
 
-# Selittävätkö DIF, DDF ja EOT muuttujan sim_A arvoja?
+# SelittÃ¤vÃ¤tkÃ¶ DIF, DDF ja EOT muuttujan sim_A arvoja?
 
 malli1 <- lm(sim_A ~ DIF + DDF + EOT, data=tas)
 summary(malli1)
@@ -108,7 +108,7 @@ summary(malli1)
 
 # -
 
-# 3.2 Faktoripisteisiin perustuvat yhdistelmämuuttujat
+# 3.2 Faktoripisteisiin perustuvat yhdistelmÃ¤muuttujat
 
 # Oletusarvona funktiossa fa oli faktoripisteiden laskeminen regressiolla:
 tas <- cbind(tas, fa3$scores)
@@ -119,7 +119,7 @@ hist(tas$PA1)
 hist(tas$PA2)
 hist(tas$PA3)
 
-# Voidaan laskea myös tenBerge, Anderson tai Bartlett muokkaamalla
+# Voidaan laskea myÃ¶s tenBerge, Anderson tai Bartlett muokkaamalla
 # faktorianalyysin ajamista, esim:
 
 fa3.tenBerge <- fa(tas[1:20],
@@ -164,7 +164,7 @@ which(is.na(tas2))
 # Aineistossa on joitakin puuttuvia arvoja. Poistetaan rivit.
 tas2 <- tas2[complete.cases(tas2), ]
 
-# Tarkastellaan tietokehystä:
+# Tarkastellaan tietokehystÃ¤:
 describe(tas2)
 dim(tas2)
 
@@ -176,7 +176,7 @@ dim(tas2)
 library(GGally)
 ggcorr(tas2[3:22]) 
 
-# Käänteisiä muuttujia on. Tarkastellaan mitkä ne olivat ja käännetään ne.
+# KÃ¤Ã¤nteisiÃ¤ muuttujia on. Tarkastellaan mitkÃ¤ ne olivat ja kÃ¤Ã¤nnetÃ¤Ã¤n ne.
 # Five of the items are reverse-scored: 4, 5, 10, 18, and 19.
 tas2$tas4 <- 6-tas2$tas4
 tas2$tas5 <- 6-tas2$tas5
