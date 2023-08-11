@@ -1,14 +1,15 @@
 # PSY.204
 # Harjoitusmoniste R1.2
 # Aineiston valmistelu tilastollista testausta varten
-# Esimerkkivastaukset / HS 29.8.2022
+# Mallivastaukset
+# HS 11.8.2023
 
 # -----
 
 # 1 Aineiston lataaminen
 
 # Asetetaan työskentelykansio:
-setwd('C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/R-harkat')
+setwd('C:/Users/sbhesa/Documents/Opetus/2023-2024/PSY204 - syksy 2023/Viikko 1')
 
 # Ladataan aineisto:
 naming <- read.csv("https://bit.ly/PSY204_naming", header=TRUE, sep="\t")
@@ -41,13 +42,13 @@ summary(naming)
 summary(naming$hrs) # jatkuva, numeerinen muuttuja
 summary(naming$word.type) # faktori
 # hrs-muuttuja on numeerinen muuttuja, joten summary tulostaa sille tunnuslukuja
-# word.type-muuttuja on kategorinen muuttuja eli faktori, joten summary tulostaa sille kategorioiden frekvenssit
+# word.type-muuttuja on kategorinen muuttuja, jonka tietotyypin R tunnisti merkkijonoksi
 # muistutuksena: kun luit aineiston käyttäen read.csv-komentoa, R arvasi automaattisesti, että numerot (esim. hrs) ovat numeerisia 
-# muuttujia ja merkkijonot (esim. word.type) faktoreita
+# muuttujia ja merkkijonot (esim. word.type) merkkijonoja
 
 # Kysymys 5: 
-class(naming$hrs) # numeerinen
-class(naming$word.type) # faktori
+class(naming$hrs) # numeerinen (numeric)
+class(naming$word.type) # merkkijono (character)
 
 # Kysymys 6:
 summary(naming)
@@ -60,9 +61,10 @@ class(naming$male)
 # R:lle pitää erikseen kertoa, että 'male' on faktori.
 
 # Kysymys 7: 
+naming$word.type <- factor(naming$word.type)
 naming$male <- factor(naming$male)
 summary(naming) # tarkistus, nyt näyttää oikealta
-class(naming$male) # myös muuttujan tietotyyppi on oikein
+class(naming$male) # myös muuttujan tietotyyppi on oikein 
 
 # Kysymys 8:
 # lisätään faktorille luokat:
