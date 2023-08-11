@@ -1,8 +1,8 @@
 # R-harjoitusmoniste R1.1:
 # R:n perusteet
-# PSY204 syksy 2022
+# PSY204 syksy 2023
 # Mallivastaukset
-# Heini Saarimäki 29.8.2022
+# Heini Saarimäki 11.8.2023
 
 # -----
 
@@ -18,7 +18,7 @@
 5/2
 # toimivat kuten oletin
 
-# Question 3
+# Kysymys 3
 10+1/2	# 10.5
 (10+1)/2	# 5.5
 # aritmeettiset operaatiot suoritetaan vasemmalta oikealle, ensin * ja /, sitten + ja -
@@ -34,10 +34,10 @@ y <- (20/5)+100
 z <- x+y
 z		# tulos on 105
 
-# Question 6
+# Kysymys 6
 100 -> a
 a
-# nuolen suunnalla on merkitystä
+# nuolen suunnalla on merkitystä - nuolen pitää osoittaa muuttujan nimeen
 # huom! ei toimi merkin = kanssa:
 100 = a	# virhe!
 
@@ -80,10 +80,10 @@ rep(1:5, each=3)
 # argumentti "each" määrää, kuinka monta kertaa peräkkäin kukin vektorin arvo toistetaan
 
 # Kysymys 12
-"a":"b"			            # virhe! : ei toimi merkkijonoilla
-c("a", "b")			        # c toimii
+"a":"b"                   # virhe! : ei toimi merkkijonoilla
+c("a", "b")               # c toimii
 seq("a", "b", by=10)	  # virhe! seq ei toimi merkkijonoilla
-rep(c("a","b"), each=3)	# rep toimii
+rep(c("a","b"), each=3)	  # rep toimii
 
 # Kysymys 13
 m <- 1:10
@@ -93,7 +93,6 @@ matrix(m, nrow=2, ncol=5, byrow=TRUE)
 cbind(m,n)
 rbind(m,n)
 # matrix luo matriisin annetuista arvoista, matriisi täytetään oletusarvoisesti sarakkeittan 
-# "matrix" creates a matrix from a given set of values, columnwise by default
 # "cbind" ja "rbind" sitovat vektorit yhteen sarakkeiksi ja riveiksi
 
 # Kysymys 14
@@ -136,7 +135,7 @@ summary(AgeWeight)
 # tietokehyksessä on kuusi muuttujaa
 # kaksi muuttujaa (SMOKE1 ja SMOKE2) saavat arvoikseen merkkijonoja
 # neljä muuta muuttujaa vaikuttaa olevan jatkuvia
-# huom! katso summaryn antamia arvoja: huomaatko mitään outoa? näitä käsitellään tarkemmin harjoitusmonisteessa R1.2
+# huom! katso summaryn antamia arvoja eri muuttujille: huomaatko mitään outoa? näitä käsitellään tarkemmin harjoitusmonisteessa R1.2
 
 # -----
 
@@ -178,16 +177,14 @@ which(AgeWeight$AGE > 60)		# listaa rivit, joiden havainnot täyttävät ehdon
 AgeWeight[AgeWeight$AGE > 60,]	# poimitaan vain rivit, joiden havainnot täyttävät ehdon
 
 # Kysymys 32
-AgeWeight[10,7]		# mahdotonta, vain 6 saraketta!
-AgeWeight[10,6]		# poimitaan sen sijaan rivin 10 sarake 6
+AgeWeight[10,6]		# rivin 10 sarake 6
 AgeWeight[4:5,2:3]	# rivit 4:5, sarakkeet 2:3
 AgeWeight[4:5,]		  # rivit 4:5, kaikki sarakkeet
 AgeWeight[c(4,6),c(1,3)] # rivit 4 ja 6 ja sarakkeet 1 ja 3 
 AgeWeight[-(4:5),1]	     # kaikki muut rivit paitsi 4 ja 5 sarakkeessa 1
 	
 # Kysymys 33
-names(AgeWeight)				    # edelleen vain 6 saraketta 
-AgeWeight[10,"SMOKE2"]			# poimitaan rivin 10 sarake 6
+AgeWeight[10,"SMOKE2"]			# rivin 10 sarake 6
 AgeWeight[4:5, c("AGE", "WEIGHT")]	# rivit 4:5, sarakkeet 2:3
 AgeWeight[c(4,6), c("MALE", "WEIGHT")] # rivit 4 ja 6, sarakkeet 1 ja 3
 
