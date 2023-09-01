@@ -1,7 +1,7 @@
 # R-harjoitusmoniste R2.2
 # Toistettujen mittausten varianssianalyysi I
-# PSY204 syksy 2022
-# HS 3.9.2022
+# PSY204 syksy 2023
+# HS 1.9.2023
 
 # ---
 
@@ -12,16 +12,8 @@ setwd("C:/Users/sbhesa/Documents/Opetus/")
 
 # 1. Aineiston lataaminen ja valmistelu
 
-# Ennen aloitusta asenna kirjasto 'nummenmaa' koneellesi:
-install.packages("remotes")
-library(remotes)
-install_url("http://emotion.utu.fi/wp-content/uploads/2019/11/nummenmaa_1.0.tar.gz",dependencies=TRUE)
-
-# Ota kirjasto session käyttöön:
-library(nummenmaa)
-
 # Lataa aineisto:
-data <- hitfeelshit1
+data <- read.csv('https://bit.ly/PSY204_hitfeelshit1')
 
 # Tarkastele aineistoa:
 summary(data)
@@ -61,7 +53,7 @@ write.csv(keskiluvut, file="hitfeelshit1_keskiluvut.csv") # tallennetaan tiedost
 
 # Kysymys 6:
 hist(EPAMIELLYTTAVYYS)
-# Epämiellyttävyys ei vaikuta täysin normaalisti jakautuneelta. Tarkastellaan tätä lisää myöhemmin.
+# Epämiellyttävyys on kohtuullisen normaalisti jakautunut.
 
 # Kysymys 7:
 boxplot(EPAMIELLYTTAVYYS ~ RYHMA)
@@ -203,3 +195,13 @@ interaction.plot(VETO, RYHMA, EPAMIELLYTTAVYYS,
                  ylab="EPAMIELLYTTAVYYS",
                  main="Interaktiokuvio")
 # Harjoituskerran aikana koettu epämiellyttävyys kasvaa jyrkemmin HIIT-ryhmässä.
+
+
+
+
+# Post hoc malli A3
+
+posthoc <- emmeans(A3, specs=pairwise ~ RYHMA:VETO, adjust="holm")
+
+# Pareittaisten t-testien tulokset
+posthoc$contrasts
