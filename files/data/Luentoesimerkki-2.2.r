@@ -1,12 +1,12 @@
 # PSY.204
-# HS 20.6.2022
+# HS 1.9.2023
 # Esimerkkiaineisto: Blindspots and spotlights
 
 # ---
 
 # Asetetaan työskentelykansio:
 
-setwd("C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/R-harkat")
+setwd("C:/Users/sbhesa/Documents/Opetus/2023-2024/PSY204 - syksy 2023/Viikko 2")
 
 # ---
 
