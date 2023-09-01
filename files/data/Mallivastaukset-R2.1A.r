@@ -106,9 +106,7 @@ hist(WEIGHT, main="Paino", xlab="Paino", ylab="", freq=F)
 hist(WEIGHT)
 
 # Voit joko asettaa palkkien lukumäärän:
-hist(WEIGHT, breaks=10)
-# Palkkien määrä tässä esimerkissä on vahingossa sama kuin alkuperäisessä
-# Kokeile vaihtaa esim. breaks=20
+hist(WEIGHT, breaks=5)
 
 # Tai palkin koon (tässä jokaisen palkin leveys on 20kg):
 bins = seq(20,140,by=20)
@@ -254,8 +252,6 @@ table(SMOKE1, SMOKE2)
 # Mittaushetkellä 1 oli 48 tupakoitsijaa, joista vain 22 tupakoi mittaushetkellä 22.
 # Eli tupakoinnin lopetti 26 henkilöä.
 # Sen sijaan tupakoinnin mittaushetkien välillä oli aloittanut 35 henkilöä.
-# Kysymys epävarmuustekijöistä on hieman epäselvä - jos keksit hyvän vastauksen, 
-# voit lähettää sen opettajille sähköpostitse!
 
 # -
 
