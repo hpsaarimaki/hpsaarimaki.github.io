@@ -1,5 +1,5 @@
 # PSY204 
-# HS 7.9.2022
+# HS 1.9.2023
 # Mallivastaukset harjoitusmonisteeseen R2.1A
 
 # -----
