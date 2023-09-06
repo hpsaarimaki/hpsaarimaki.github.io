@@ -18,7 +18,15 @@ data <- read.csv('https://bit.ly/PSY204_hitfeelshit1')
 # Tarkastele aineistoa:
 summary(data)
 
+# Aineisto sisältää muuttujan X, joka näyttää olevan juokseva numerointi. Poistetaan se.
+data$X <- NULL
+
 # Kysymys 1:
+# Muutetaan ensin kategoriset muuttujat faktoreiksi (ladatessa ne ovat merkkijonoja):
+data$HARJOITUS <- factor(data$HARJOITUS)
+data$RYHMA <- factor(data$RYHMA)
+data$VETO <- factor(data$VETO)
+
 # Kategoriset muuttujat eli faktorit: 
 # RYHMA (2 luokkaa), HARJOITUS (6 luokkaa), VETO (4 luokkaa)
 # Numeeriset muuttujat:
@@ -196,11 +204,7 @@ interaction.plot(VETO, RYHMA, EPAMIELLYTTAVYYS,
                  main="Interaktiokuvio")
 # Harjoituskerran aikana koettu epämiellyttävyys kasvaa jyrkemmin HIIT-ryhmässä.
 
-
-
-
-# Post hoc malli A3
-
+# Ennakkoesimerkkinä ensi viikolle: post hoc -testit malli A3
 posthoc <- emmeans(A3, specs=pairwise ~ RYHMA:VETO, adjust="holm")
 
 # Pareittaisten t-testien tulokset
