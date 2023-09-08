@@ -1,14 +1,14 @@
 # PSY204
-# Kotitehtävät 2
+# Kotitehtävät viikko 3
 # Mallivastaukset
-# Heini Saarimäki 16.9.2022
+# Heini Saarimäki 8.9.2023
 
 # -----
 
 # 1. Aineiston valmistelu
 
 # Asetetaan työskentelykansio
-setwd('C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/Materiaalit/Peltola et al 2018/')
+setwd('C:/Users/sbhesa/Documents/Opetus/2023-2024/PSY204 - syksy 2023/Viikko 3/')
 
 # Ladataan aineisto:
 peltola <- read.csv("https://hpsaarimaki.github.io/files/data/peltola_clean.csv", header=T)
