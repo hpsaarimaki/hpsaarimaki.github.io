@@ -112,7 +112,7 @@ anova(A1, es="pes")
 # Post hoc -testejä ei tarvita, koska kaikki riippumattomat muuttujat
 # ovat kaksiluokkaisia. Tällöin koetilanteiden ero näkyy suoraan ANOVAsta.
 
-# Yhteisvaikutukset eivät olleet tilastollisesti merkitseviä,
+# Yhdysvaikutukset eivät olleet tilastollisesti merkitseviä,
 # joten interaktiokuviota ei tehdä.
 
 # -----
