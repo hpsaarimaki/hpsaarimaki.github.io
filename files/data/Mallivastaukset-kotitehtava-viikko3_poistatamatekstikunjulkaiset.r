@@ -1,7 +1,7 @@
 # PSY204
 # Kotitehtävät viikko 3
 # Mallivastaukset
-# Heini Saarimäki 8.9.2023
+# Heini Saarimäki 8.9.2022
 
 # -----
 
@@ -32,14 +32,14 @@ attach(peltola)
 # 2. Kuvailevat tulokset
 
 # Laatikkokuvio:
-boxplot(N170 ~ condition)
+boxplot(N170 ~ facial_expression)
 
 # Ladataan kirjasto 'psych'
 library(psych)
 
-# Otetaan keskiluvut ja tallennetaan ne tiedostoon:
-keskiluvut <- describe(peltola)
-write.csv(keskiluvut, "peltola_keskiluvut.csv")
+# Otetaan ERP-komponenttien keskiluvut ja tallennetaan ne tiedostoon:
+keskiluvut <- describe(peltola[,5:6])
+write.csv(keskiluvut, "ERP_keskiluvut.csv")
 
 # ---
 
@@ -48,8 +48,12 @@ write.csv(keskiluvut, "peltola_keskiluvut.csv")
 # Ladataan tarvittava kirjasto:
 library(afex)
 
-# Rakennetaan malli:
+# Rakennetaan malli A1:
 A1 <- aov_car(N170 ~ Error(ID/condition*face_age*facial_expression), data=peltola)
+
+# Rakennetaan malli A2:
+A2 <- aov_car(LPP ~ Error(ID/condition*face_age*facial_expression), data=peltola)
+
 
 # ---
 
@@ -73,6 +77,20 @@ peltola %>%
 
 # N170-muuttujassa ei ole merkitseviä vierashavaintoja.
 
+# Koko aineisto
+peltola %>%
+  identify_outliers(LPP)
+# ei äärimmäisen poikkeavia vierashavaintoja
+
+# Koetilanteittain:
+peltola %>%
+  group_by(condition, face_age, facial_expression) %>%
+  identify_outliers(LPP)
+# ei äärimmäisen poikkeavia vierashavaintoja
+
+# LPP-muuttujassa ei ole merkitseviä vierashavaintoja.
+
+
 # Normaalijakautuneisuus:
 
 # Ladataan tarvittava kirjasto:
@@ -85,6 +103,15 @@ A1_is_norm
 # Tarkastellaan lisää:
 plot(A1_is_norm)
 plot(A1_is_norm, type="qq")
+# jäännöstermien jakauma on vino
+
+# Malli A2: 
+A2_is_norm <- check_normality(A2)
+A2_is_norm
+# residuaalit ei normaalisti jakautuneet
+# Tarkastellaan lisää:
+plot(A2_is_norm)
+plot(A2_is_norm, type="qq")
 # jäännöstermien jakauma on vino
 
 # Varianssien yhtäsuuruus:
@@ -100,7 +127,7 @@ check_sphericity(A1)
 
 # 5. Tilastollisen testin tulosten tarkastelu ja raportointi
 
-# Varianssianalyysin tulokset:
+# Varianssianalyysin tulokset mallille A1:
 summary(A1)
 anova(A1, es="pes")
 
@@ -114,5 +141,20 @@ anova(A1, es="pes")
 
 # Yhdysvaikutukset eivät olleet tilastollisesti merkitseviä,
 # joten interaktiokuviota ei tehdä.
+
+--
+
+# Varianssianalyysin tulokset mallille A2:
+summary(A2)
+anova(A2, es="pes")
+# Vain yksi päävaikutus on merkitsevä:
+# Kasvojen ikä (aikuinen vs lapsi), F(1,37)=8.24, p<.01, pes = 0.18)
+
+# Post hoc -testejä ei tarvita, koska kaikki riippumattomat muuttujat
+# ovat kaksiluokkaisia. Tällöin koetilanteiden ero näkyy suoraan ANOVAsta.
+
+# Yhdysvaikutukset eivät olleet tilastollisesti merkitseviä,
+# joten interaktiokuviota ei tehdä.  
+  
 
 # -----
