@@ -1,5 +1,5 @@
 # PSY.204
-# HS 23.9.2022
+# HS 17.9.2023
 # Esimerkkiaineisto: Persoonallisuus
 
 # ---
@@ -13,12 +13,6 @@ setwd("C:/Users/sbhesa/Documents/Opetus")
 
 # Ladataan aineisto:
 
-# Vaihtoehto 1: nummenmaa-kirjasto
-library(nummenmaa)
-perso <- persoonallisuus
-summary(perso)
-
-# Vaihtoehto 2: lataa aineisto netistä
 perso <- read.csv("https://hpsaarimaki.github.io/files/data/persoonallisuus.csv")
 perso[1] <- NULL
 summary(perso)
