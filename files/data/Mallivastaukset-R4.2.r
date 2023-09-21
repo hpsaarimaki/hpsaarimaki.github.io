@@ -14,8 +14,9 @@ setwd("C:/Users/sbhesa/Documents/Opetus")
 # Ladataan aineisto:
 
 perso <- read.csv("https://hpsaarimaki.github.io/files/data/persoonallisuus.csv")
-perso[1] <- NULL
 summary(perso)
+
+perso$ID <- factor(perso$ID)
 perso$SUKUP <- factor(perso$SUKUP)
 perso$KATISYYS <- factor(perso$KATISYYS)
 
@@ -32,14 +33,29 @@ describe(perso)
 
 # Sirontakuvio kaikkien numeeristen muuttujien välillä:
 dev.new()
-plot(perso[3:20]) 
+plot(perso[4:21]) 
 
 # Sirontakuvio valikoiduille muuttujille:
 dev.new()
-plot(perso[c(3,7:9,15:19)])
+plot(perso[c(4,8:10,16:20)])
+
+# Histogrammit valikoiduille muuttujille:
+# Jakaumat (histogrammien avulla):
+dev.new()
+par(mfrow=c(3,3))
+hist(ITSEHILLINTA)
+hist(STRESSI)
+hist(MASENNUS)
+hist(AHDISTUNEISUUS)
+hist(NEUROTISISMI)
+hist(ULOSPAINSUUNT)
+hist(AVOIMUUS)
+hist(SOVINNOLLISUUS)
+hist(TUNNOLLISUUS)
 
 # Korrelaatiomatriisi valikoiduille muuttujille:
-corr.test(perso[c(3,7:9,15:19)])
+# Käytetään Spearmanin korrelaatioita, koska kaikki muuttujat eivät olleet normaalijakautuneita.
+corr.test(perso[c(4,8:10,16:20)], method="spearman")
 
 # -
 
