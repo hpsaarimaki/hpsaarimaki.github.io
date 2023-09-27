@@ -1,6 +1,6 @@
+# Harjoitusmoniste R5.1 
 # Logistinen regressio
-# Harjoituksia
-# Heini Saarimäki 3.10.2022
+# Heini Saarimäki 27.9.2023
 
 # -----
 
@@ -39,6 +39,7 @@ summary(titanic)
 
 # Ikä puuttuu monilta
 library(Amelia)
+dev.new()
 missmap(titanic, main="Puuttuvat vs havaitut arvot")
 
 # Hytti puuttuu monilta, poistetaan koko sarake:
@@ -48,7 +49,7 @@ titanic$Cabin <- NULL
 titanic$Age[is.na(titanic$Age)] <- mean(titanic$Age,na.rm=T)
 
 # Poistetaan puuttuvat lähtösataman arvot:
-titanic <- titanic[complete.cases(titanic), ]
+titanic <- titanic[complete.cases(titanic$Embarked), ]
 
 # -----
 
@@ -107,12 +108,14 @@ boxplot(Fare ~ Pclass, data=opetus)
 # 5.2 Mallin sopivuus
 anova(malli, test="Chisq")
 
+nollamalli <- glm(Survived ~ 1, family="binomial", data=opetus)
+anova(nollamalli, malli, test="Chisq")
+
 # -
 
 # 5.3 Mallin selitysaste
 
 # Pseudo-R2:n estimointi:
-nollamalli <- glm(Survived ~ 1, data=opetus, family="binomial")
 1-logLik(malli) / logLik(nollamalli)
 
 # Nagelkerken pseudo-R2:
@@ -141,8 +144,8 @@ plot(prf)
 
 # Lasketaan ROC-käyrän alapuolelle jäävä pinta-ala:
 auc <- performance(pr, measure = "auc")
-auc <- auc@y.values[[1]]
-auc
+auc@y.values[[1]]
+
 # Arvo on lähellä yhtä, eli mallin ennustustarkkuus on hyvä.
 
 # Ristiintaulukointi:
@@ -224,5 +227,3 @@ library(AICcmodavg)
 aictab(cand.set = list(malli, malli_uusi), modnames = c("malli", "malli_uusi") )
 
 # Alkuperäinen malli sopii aineistoon paremmin.
-
-
