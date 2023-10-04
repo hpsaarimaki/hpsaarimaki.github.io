@@ -1,13 +1,14 @@
-# PSY204 syksy 2022
-# Harjoitusmoniste 6.2: Faktorianalyysi
+# PSY204 syksy 2023
+# Harjoitusmoniste 6.1: Faktorianalyysi
 # Mallivastaukset
-# Heini Saarimäki 9.10.2022
+# Heini Saarimäki 4.10.2023
 # 
 # ----
 
 # Ladataan tarvittavat kirjastot
 library(psych)
 library(GPArotation)
+library(GGally)
 
 # Asetetaan työskentelykansio
 setwd("C:/Users/sbhesa/Documents/Opetus/")
@@ -35,8 +36,7 @@ hist(tas$TAS4)
 hist(tas$TAS5)
 
 # Tarkastellaan korrelaatiomatriisia visuaalisesti:
-library(GGally)
-ggcorr(tas) 
+ggcorr(tas) # funktio sisältyy kirjastoon GGally
 
 # -
 
