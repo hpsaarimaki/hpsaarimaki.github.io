@@ -1,7 +1,7 @@
-# PSY204 syksy 2022
+# PSY204 syksy 2023
 # Harjoitukset 7.1: Faktoreiden jatkokäyttö ja konfirmatorinen faktorianalyysi
 # Mallivastaukset
-# Heini Saarimäki 25.10.2022
+# Heini Saarimäki 8.10.2023
 # 
 # ----
 
