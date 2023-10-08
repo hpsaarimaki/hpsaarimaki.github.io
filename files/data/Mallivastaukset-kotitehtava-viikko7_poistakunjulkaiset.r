@@ -1,7 +1,7 @@
-# PSY204 syksy 2022
+# PSY204 syksy 2023
 # Kotitehtävä viikko 7: Faktorianalyysi
 # Mallivastaukset
-# Heini Saarimäki 24.10.2022
+# Heini Saarimäki 8.10.2023
 # 
 # ----
 
@@ -14,14 +14,14 @@ setwd("C:/Users/sbhesa/Documents/Opetus/")
 
 # Ladataan aineisto:
 
-dubois <- read.csv("2022-2023/PSY204 - syksy 2022/Kotitehtävät/hcp_clean.csv", sep=";")
+dubois <- read.csv("https://hpsaarimaki.github.io/files/data/hcp_clean.csv", sep=";")
 
 # Tarkistetaan puuttuvat havainnot:
 library(psych)
 describe(dubois)
 anyNA(dubois) 
 
-# ei puuttuvia havaintoja, N = 884
+# ei puuttuvia havaintoja, N = 879
 
 # Muutetaan faktorit faktoreiksi:
 dubois$Subject <- factor(dubois$Subject)
@@ -112,9 +112,9 @@ fa4
 # vinokulmarotaatio oli hyvä valinta.
 
 # 1) Faktoriratkaisun sopivuus:
-# Khiin neliötesti: khii2(11) = 13.96, p<.24 eli ei-merkitsevä. Malli sopii hyvin.
-# TLI = 0.99 eli malli sopii hyvin.
-# RMSEA = 0.017 eli malli sopii hyvin.
+# Khiin neliötesti: khii2(11) = 14.77, p<.19 eli ei-merkitsevä. Malli sopii hyvin.
+# TLI = 0.991 eli malli sopii hyvin.
+# RMSEA = 0.02 eli malli sopii hyvin.
 
 # 2) Faktorilataukset:
 library(plot.matrix)
@@ -124,7 +124,7 @@ plot(loadings(fa4), cex=0.5, axis.row = list(side=2, las=1))
 # 3) Muuttujien kommunaliteetit:
 fa4$communality
 # Kommunaliteetit <.3: 
-# ListSort 0.28, IWRD_TOT 0.098
+# ListSort 0.28, IWRD_TOT 0.096
 # ListSort vielä kohtuullisen rajoissa, mutta
 # IWRD_TOT sopii malliin huonosti.
 
@@ -188,13 +188,13 @@ plot(loadings(fa4.new), cex=0.5, axis.row = list(side=2, las=1))
 # Rotatointimenetelmäksi valittiin vinokulmarotaatio, koska kognition eri osa-alueiden 
 # oletettiin korreloivan keskenään.
 
-# Neljän faktorin ratkaisu sopi malliin hyvin (khii2(11) = 13.96, p<.24; TLI = 0.99; RMSEA = 0.017).
+# Neljän faktorin ratkaisu sopi malliin hyvin (khii2(11) = 14.77, p<.19; TLI = 0.99; RMSEA = 0.02).
 # Neljä faktoria voitiin tulkita 1) kristalloituneeksi kyvykkyydeksi (Vocab, ReadEng), 
 # 2) prosessointinopeudeksi (CardSort, Flanker, ProcSpeed), 3) visuospatiaaliseksi kyvykkyydeksi (VSPLOT, PMAT)
 # ja 4) muistiksi (PicSeq, ListSort). Yksittäisistä tehtävämuuttujista vain IWRD_TOT latautui faktoreille heikosti (kommunaliteetti = 0.098, kun
 # hyväksyttävän kommunaliteetin rajana voidaan pitää .3), joten faktorianalyysi ajettiin vielä ilman tätä
 # muuttujaa. Muuttujan jättäminen pois faktoriratkaisusta paransi mallin sopivuutta entisestään
-# (khii2(6) = 4.18, p<.65; TLI = 1.01; RMSEA = 0).
+# (khii2(6) = 4.49, p<.6; TLI = 1.01; RMSEA = 0).
 
 # Neljän faktorin ratkaisu ilman IWRD_TOT-muuttujaa selitti yhteensä 49% tehtävissä suoriutumisen
 # vaihtelusta (yksittäisten faktoreiden selitysosuudet 8-16%).
