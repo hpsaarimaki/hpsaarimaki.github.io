@@ -1,7 +1,7 @@
 # PSY204 syksy 2023
 # Harjoitukset 7.1: Faktoreiden jatkokäyttö ja konfirmatorinen faktorianalyysi
 # Mallivastaukset
-# Heini Saarimäki 8.10.2023
+# Heini Saarimäki 11.10.2023
 # 
 # ----
 
@@ -26,7 +26,7 @@ setwd("C:/Users/sbhesa/Documents/Opetus/")
 
 # Ladataan aineisto:
 
-tas <- read.csv("2022-2023/PSY204 - syksy 2022/Materiaalit/briganti-tas-data-2.csv", sep=";")
+tas <- read.csv("https://hpsaarimaki.github.io/files/data/briganti-tas-data-2.csv", sep=";")
 
 # Tarkastellaan aineistoa:
 summary(tas)
@@ -148,7 +148,7 @@ hist(tas$PA3.tenBerge)
 
 # Ladataan aineisto:
 
-tas2 <- read.csv("2022-2023/PSY204 - syksy 2022/Materiaalit/tas-scores.csv", sep=";")
+tas2 <- read.csv("https://hpsaarimaki.github.io/files/data/tas-scores.csv", sep=";")
 
 # Tarkastellaan aineistoa:
 summary(tas2)
