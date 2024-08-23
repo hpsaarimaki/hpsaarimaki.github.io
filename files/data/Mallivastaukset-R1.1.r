@@ -1,8 +1,8 @@
 # R-harjoitusmoniste R1.1:
 # R:n perusteet
-# PSY204 syksy 2023
+# PSY204 syksy 2024
 # Mallivastaukset
-# Heini Saarimäki 11.8.2023
+# Heini Saarimäki 23.8.2024
 
 # -----
 
