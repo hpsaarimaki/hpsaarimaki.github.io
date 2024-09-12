@@ -1,216 +1,239 @@
 # PSY204
-# Harjoitusmoniste R3.1
-# Heini Saarimäki 20.9.2022
+# R-harjoitusmoniste R3.1
+# Mallivastaukset
+# Heini Saarimäki 10.9.2024
 
 # -----
 
-# 1. Analyysin jatkaminen
-
-# Asetetaan ensin työskentelykansio:
-setwd("C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/R-harkat")
-
-  
-# Jos haluat käyttää alla olevaa source-komentoa, 
-# varmista, että viime viikon skripti on työskentelykansiossasi.
-  
-# Ajetaan viime viikon analyysit.
-# Voit käyttää yläreunan "source"-nappulaa, jos avaat viime viikon skriptin editoriin...
-# ... tai ajaa viime viikon skriptin suoraan komentoriviltä:
-source("harkat-R2.2.r")
-
-# Tarkista, että tietokehys data ja mallit A1, A2 ja A3 näkyvät oikean reunan muuttujaluettelossa.
+# Aseta työskentelykansio
+setwd('C:/Users/sbhesa/OneDrive - TUNI.fi/Opetus/2024-2025/PSY.204 syksy 2024/Harjoitukset/')
 
 # ---
 
-# 2. Oletusten tarkastelu
+# 1. Aineiston valmistelu
 
-# Kysymys 1: Vierashavainnot
+# Tämä osio kopioitu suoraan harjoitusmonisteen 2.1 vastauksista.
+# Aineiston tarkastelut tehty t-testien yhteydessä, joten niitä ei tässä tehdä uudestaan.
+# Äärimmäisen poikkeavia havaintoja ei ollut missään muuttujassa, joten valmisteluista
+# tehdään vain kategoristen muuttujien muuttaminen faktoreiksi.
 
-# Ladataan tarvittava kirjasto, asenna tarvittaessa:
-library(rstatix)
+# Ladataan aineisto:
+deprivation <- read.csv('https://bit.ly/PSY204_deprivation')
 
-# Koko aineisto
-data %>%
-  identify_outliers(EPAMIELLYTTAVYYS)
-# ei vierashavaintoja
+# Muutetaan kategoriset muuttujat ID, age, education ja ht_group faktoreiksi:
+deprivation$ID <- factor(deprivation$ID)
+deprivation$age <- factor(deprivation$age)
+deprivation$education <- factor(deprivation$education)
+deprivation$ht_group <- factor(deprivation$ht_group)
 
-# Koetilanteittan harjoitusryhmän mukaan:
-vierashavainnot <- data %>%
-  group_by(RYHMA, HARJOITUS, VETO) %>%
-  identify_outliers("EPAMIELLYTTAVYYS")
-print(vierashavainnot, n=23)
+# Tarkistetaan aineisto:
+summary(deprivation)
 
-# Vierashavainnot eivät ole merkitsevästi poikkeavia.
-
-# Kysymys 2: normaalijakautuneisuus
-
-# Ladataan tarvittava kirjasto, asenna tarvittaessa:
-library(performance)
-
-# Malli A1:
-A1_is_norm <- check_normality(A1)
-A1_is_norm
-plot(A1_is_norm)
-plot(A1_is_norm, type="qq")
-plot(A1_is_norm, type="qq", detrend=TRUE)
-# residuaalit normaalisti jakautuneet
-
-# Malli A2:
-A2_is_norm <- check_normality(A2)
-A2_is_norm
-plot(A2_is_norm, type="qq")
-# residuaalit ei normaalisti jakautuneet
-
-# Malli A3:
-A3_is_norm <- check_normality(A3)
-A3_is_norm
-plot(A3_is_norm, type="qq")
-# residuaalit ovat normaalisti jakautuneet
-
-# Kysymys 3: varianssien yhtäsuuruus
-check_sphericity(A1)
-check_sphericity(A2)
-check_sphericity(A3)
-# varianssit eivät ole yhtä suuria missään mallissa
-
-# Kysymys 14:
-# Varianssien yhtäsuuruusoletuksen saa korjattua sfäärisyyskorjauksilla
-# Mutta ryhmäkoot ovat varsin pieniä, vain 13 osallistujaa per ryhmä
-# Lisäksi normaalijakautuneisuusoletus on ongelma
+# Kun olet valmistellut aineiston, sen voi kiinnittää:
+attach(deprivation)
 
 # ---
 
-# 3. Tilastollisen testin tulosten tarkastelu
+# 2. Yksisuuntainen riippumattomien otosten ANOVA
 
-# Malli A1: Vedon päävaikutus
+# 2.1 Merkkikoe
 
-# Kysymys 5:
+# Oletusten tarkastelu:
 
-# Tutkitaan tunnuslukuja:
+# Ryhmäkoko eri ryhmissä:
+summary(education)
+# Ryhmäkoko on 13-18 osallistujaa, mutta harjoituksen vuoksi käytetään
+# silti yksisuuntaista ANOVAa.
+
+# Merkkikokeen jakauma eri koulutusryhmissä:
+hist(subset(deprivation, education == "1")$digitsymbol_1) 
+hist(subset(deprivation, education == "2")$digitsymbol_1)
+hist(subset(deprivation, education == "3")$digitsymbol_1)
+
+# Shapiro-Wilk:
+shapiro.test(subset(deprivation, education == "1")$digitsymbol_1) 
+shapiro.test(subset(deprivation, education == "2")$digitsymbol_1)
+shapiro.test(subset(deprivation, education == "3")$digitsymbol_1)
+# Merkkikokeen pistemäärä on normaalijakautunut kaikissa muissa ryhmissä paitsi
+# korkeakoulutetuilla.
+
+# Levenen testi:
+library(car)
+leveneTest(digitsymbol_1 ~ education)
+# Varianssit ovat yhtä suuret.
+
+# Yksisuuntainen ANOVA koulutusryhmien eroille merkkitestissä:
+A1 <- aov(digitsymbol_1 ~ education, data=deprivation)
+
+# Tulostetaan ANOVA:n tulokset:
 summary(A1)
-anova(A1, es="pes")
-# Koettu epämiellyttävyys muuttuu tilastollisesti merkitsevästi yhden harjoituskerran aikana (F(3,75)=59.39, p[GG]<.001, pes=.70).
-# Tulosten tarkasteluun käytettiin Greenhouse-Geisserin sfäärisyyskorjausta, koska varianssit eivät olleet joka solussa yhtä suuret.
 
-# Kysymys 6:
-library(emmeans)
+# Efektikoko:
+library(effectsize)
+eta_squared(A1)
 
-# Tallennetaan referenssitaulukko:
-ref1 <- emmeans(A1, specs="VETO")
+# Ei merkitseviä eroja, F(2,44)=2.16, p=.128, eta^2=0.09.
 
-# Määritetään kontrasti:
-kontrasti_1 <- c(1,-0.33,-0.33,-0.33)
+# Koska normaalijakaumaoletus ei toteutunut kolmannen ryhmän osalta,
+# tarkistetaan vielä tulokset Kruskal-Wallisin testillä:
+kruskal.test(digitsymbol_1 ~ education, data=deprivation)
 
-# Testataan kontrastia:
-summary(contrast(ref1, list(first_vs_others = kontrasti_1)))
+# Koska parametrinen ja epäparametrinen testi antavat saman tuloksen,
+# voimme todeta, että koulutustaso ei todennäköisesti vaikuta merkkitestin
+# perussuoriutumiseen. Yleensä raportoidaan parametrisen testin tulos, mutta
+# tulososiossa voi myös kommentoida, että epäparametrinen testi antoi saman
+# tuloksen.
 
-# Ensimmäinen veto eroaa kaikista muista (t(25)=7.48, p<.0001)
+# Visualisoidaan tulokset:
+boxplot(digitsymbol_1 ~ education, xlab="Koulutusryhmä", 
+        ylab="Merkkitestin pistemäärä",
+        main="Merkkitestin pistemäärä eri koulutusryhmissä", 
+        col="grey")
 
-# Kysymys 7:
+# 2.2 Bentonin testi
 
-# Yksinkertainen laatikkokuvio:
-boxplot(EPAMIELLYTTAVYYS~VETO)
+# Oletusten tarkastelu:
 
-# Näytetään tulokset tuunattuna laatikkokuviona:
-library(ggplot2) # ladataan kirjasto, asenna tarvittaessa
-ggplot(data, aes(x=VETO, y=EPAMIELLYTTAVYYS)) +
-  geom_boxplot() +
-  labs(y = "Epämiellyttävyys", x = "Vedon järjestysnumero") + 
-  theme(legend.title=element_blank())
+# Bentonin virhepisteiden jakauma eri koulutusryhmissä:
+hist(subset(deprivation, education == "1")$bentonerror_1) 
+hist(subset(deprivation, education == "2")$bentonerror_2)
+hist(subset(deprivation, education == "3")$bentonerror_3)
 
-# ---
+# Shapiro-Wilk:
+shapiro.test(subset(deprivation, education == "1")$bentonerror_1) 
+shapiro.test(subset(deprivation, education == "2")$bentonerror_2)
+shapiro.test(subset(deprivation, education == "3")$bentonerror_3)
+# Merkkikokeen pistemäärä on normaalijakautunut kaikissa muissa ryhmissä paitsi
+# toisen asteen koulutuksen saaneilla.
 
-# Malli A2: Vedon ja harjoituksen pää- ja yhdysvaikutukset
+# Levenen testi:
+leveneTest(bentonerror_1 ~ education)
+# Varianssit ovat yhtä suuret.
 
-# Tutkitaan tunnuslukuja:
+# Yksisuuntainen ANOVA koulutusryhmien eroille merkkitestissä:
+A2 <- aov(bentonerror_1 ~ education, data=deprivation)
+
+# Tulostetaan ANOVA:n tulokset:
 summary(A2)
-anova(A2, es="pes")
 
-# Harjoituksen aikaisen epämiellyttävyyden kokeminen ei muutu harjoittelun myötä (F(15,375)=1.36, p[GG]=.23).
-# Harjoituksen aikana epämiellyttävyys muuttuu (F(3,75)=59.4, p[GG]<.001, pes=.704).
-# Epämiellyttävyys muuttuu myös harjoituskertojen myötä (F(5,125)=6.4, p[GG]<.01, pes=.205).
-# Muutos harjoituksen aikana on suurempi kuin harjoituskertojen myötä tapahtuva muutos (ks. efektikoot).
+# Efektikoko:
+eta_squared(A2)
 
-# Kysymys 9:
+# Ei merkitseviä eroja, F(2,44)=0.024, p=.976, eta^2=0.001.
 
-A2_posthoc1 <- emmeans(A2, specs=pairwise ~ VETO, adjust = "holm")
-A2_posthoc2 <- emmeans(A2, specs=pairwise ~ HARJOITUS, adjust = "holm")
+# Koska normaalijakaumaoletus ei toteutunut kolmannen ryhmän osalta,
+# tarkistetaan vielä tulokset Kruskal-Wallisin testillä:
+kruskal.test(bentonerror_1 ~ education, data=deprivation)
 
-A2_posthoc1$contrasts
+# Koska parametrinen ja epäparametrinen testi antavat saman tuloksen,
+# voimme todeta, että koulutustaso ei todennäköisesti vaikuta Bentonin testin
+# perussuoriutumiseen. 
 
-# Kaikkien vetoparien erot ovat tilastollisesti merkitseviä.
-# Nämä voisi ehkä näyttää taulukkona, koska lukuja on niin paljon.
-# Tallennetaan siis taulukko:
-write.csv(A2_posthoc1$contrasts, "A2_veto_posthoc.csv")
+# Visualisoidaan tulokset:
+boxplot(bentonerror_1 ~ education, xlab="Koulutusryhmä", 
+        ylab="Bentonin testin pistemäärä",
+        main="Bentonin testin pistemäärä eri koulutusryhmissä", 
+        col="grey")
 
-A2_posthoc2$contrasts
-# Bonferroni-Holm-korjauksen jälkeen merkitsevä ero löytyy vain 
-# ensimmäisen ja viimeisen harjoituksen väliltä (t(25)=3.41, p<.05).
 
-# Kysymys 10:
-A2_bonf1 <- emmeans(A2, specs=pairwise ~ VETO, adjust = "bonferroni")
-A2_bonf2 <- emmeans(A2, specs=pairwise ~ HARJOITUS, adjust = "bonferroni")
 
-A2_bonf1$contrasts
-# Konservatiivisemman Bonferroni-korjauksen käyttö ei muuta tuloksia:
-# kaikki parittaiset vertailut edelleen merkitseviä.
-
-A2_bonf2$contrasts
-# Myös näiden post hoc-vertailuiden tulokset ovat edelleen samat.
-
-# Kysymys 11:
-
-# Näytetään tulokset interaktiokuviona:
-interaction.plot(VETO, HARJOITUS, EPAMIELLYTTAVYYS,
-                 type="b", col=c(1:6),
-                 leg.bty="o",leg.bg="beige",
-                 lwd=2, pch=c(18,18),
-                 xlab="VETO",
-                 ylab="EPAMIELLYTTAVYYS",
-                 main="Interaktiokuvio")
-# Kuvio näyttää eri harjoituskertojen aikaisen koetun epämiellyttävyyden muutoksen.
-# Epämiellyttävyys kasvaa aina harjoituskerran aikana.
-# Ensimmäisessä harjoituksessa koettu epämiellyttävyys on suurin.
-# Koettu epämiellyttävyys laskee harjoittelun myötä.
 
 # ---
 
-# Malli A3:
+# 3. Kaksisuuntainen riippumattomien otosten ANOVA
 
-# Kysymys 12:
+# 3.1 Merkkikoe
 
+# Ryhmäkoko eri ryhmissä:
+table(age,ht_group)
+# Ryhmäkoko on 10-15 osallistujaa.
+
+# Merkkikokeen jakauma eri ikäryhmissä:
+hist(subset(deprivation, age == "1")$digitsymbol_1) 
+hist(subset(deprivation, age == "2")$digitsymbol_1)
+
+# Shapiro-Wilk:
+shapiro.test(subset(deprivation, age == "1")$digitsymbol_1) 
+shapiro.test(subset(deprivation, age == "2")$digitsymbol_1)
+# Merkkikokeen pistemäärä on normaalijakautunut molemmissa ikäryhmissä.
+
+# Merkkikokeen jakauma eri hormonihoitoryhmissä:
+hist(subset(deprivation, ht_group == "user")$digitsymbol_1) 
+hist(subset(deprivation, ht_group == "control")$digitsymbol_1)
+
+# Shapiro-Wilk:
+shapiro.test(subset(deprivation, ht_group == "user")$digitsymbol_1) 
+shapiro.test(subset(deprivation, ht_group == "control")$digitsymbol_1)
+# Merkkikokeen pistemäärä on normaalijakautunut molemmissa hormonihoitoryhmissä.
+
+# Levenen testi:
+library(car)
+leveneTest(digitsymbol_1 ~ ht_group*age)
+# Varianssit ovat yhtä suuret.
+
+# Kaksisuuntainen ANOVA:
+A3 <- aov(digitsymbol_1 ~ ht_group*age, data=deprivation)
+
+# Tulostetaan ANOVA:n tulokset:
 summary(A3)
-anova(A3, es="pes")
+# Vain yhdysvaikutus on merkitsevä.
 
-# Ryhmät eroavat toisistaan vain harjoituskerran sisäisen muutoksen osalta (ryhmän ja vedon yhdysvaikutus, F(3, 72)=8.6, p[GG]<.01, pes=0.26).
-# Epämiellyttävyyden muutos harjoituskerran sisällä riippuu siis ryhmästä.
-# Vedon päävaikutus on merkitsevä, eli harjoituskerran sisällä tapahtuu myös keskimäärin muutosta (F(3,72)=77.4, p[GG]<.001, pes=.76).
+# Efektikoko:
+library(effectsize)
+eta_squared(A3)
 
-# Kysymys 13:
+# Hormonihoidon ja iän yhdysvaikutus on merkitsevä, F(1,43)=6.81, p=.012, eta2=0.14).
+# Hormonihoidon ja iän päävaikutukset eivät ole merkitseviä.
 
-# Post hoc -testaus vedon vaikutukselle tehtiin jo mallin A2 kohdalla, joten
-# tässä tarkastellaan vain yhdysvaikutusta:
+# Tarkastellaan tuloksia interaktiokuvion avulla:
+interaction.plot(ht_group, age, digitsymbol_1)
 
-A3_posthoc <- emmeans(A3, specs=pairwise ~ RYHMA:VETO, adjust="holm")
+# Verrokkiryhmässä pistemäärä on korkeampi vanhemmilla osallistujilla.
+# Hormonihoitoryhmässä pistemäärä on korkeampi nuoremmilla osallistujilla.
 
-# Parittaisten t-testien tulokset
-A3_posthoc$contrasts
+# -
 
-# Vedon merkitys eri ryhmissä: 
-# Epämiellyttävyyden muutos näkyy HIIT-ryhmässä saman tien, ja tasaantuu kolmannen vedon jälkeen.
-# Epämiellyttävyyden muutos näkyy MICT-ryhmässä vasta toisen vedon jälkeen.
+# 3.2 Bentonin virhepisteet
 
-# Kysymys 14:
+# Bentonin jakauma eri ikäryhmissä:
+hist(subset(deprivation, age == "1")$bentonerror_1) 
+hist(subset(deprivation, age == "2")$bentonerror_1)
 
-# Näytetään tulokset interaktiokuviona:
-interaction.plot(VETO, RYHMA, EPAMIELLYTTAVYYS,
-                 type="b", col=c(1:6),
-                 leg.bty="o",leg.bg="beige",
-                 lwd=2, pch=c(18,18),
-                 xlab="VETO",
-                 ylab="EPAMIELLYTTAVYYS",
-                 main="Interaktiokuvio")
-# Harjoituskerran aikana koettu epämiellyttävyys kasvaa jyrkemmin HIIT-ryhmässä.
-# Tätä myös post hoc -vertailut osoittivat.
+# Shapiro-Wilk:
+shapiro.test(subset(deprivation, age == "1")$bentonerror_1) 
+shapiro.test(subset(deprivation, age == "2")$bentonerror_1)
+# Bentonin pistemäärä on normaalijakautunut molemmissa ikäryhmissä.
 
+# Bentonin jakauma eri hormonihoitoryhmissä:
+hist(subset(deprivation, ht_group == "user")$bentonerror_1) 
+hist(subset(deprivation, ht_group == "control")$bentonerror_1)
 
+# Shapiro-Wilk:
+shapiro.test(subset(deprivation, ht_group == "user")$bentonerror_1) 
+shapiro.test(subset(deprivation, ht_group == "control")$bentonerror_1)
+# Bentonin pistemäärä on normaalijakautunut molemmissa hormonihoitoryhmissä.
+
+# Levenen testi:
+leveneTest(bentonerror_1 ~ ht_group*age)
+# Varianssit ovat yhtä suuret.
+
+# Kaksisuuntainen ANOVA:
+A4 <- aov(bentonerror_1 ~ ht_group*age, data=deprivation)
+
+# Tulostetaan ANOVA:n tulokset:
+summary(A4)
+# Vain hormonihoidon päävaikutus on merkitsevä.
+
+# Efektikoko:
+eta_squared(A4)
+
+# Hormonihoidon ja iän yhdysvaikutus on merkitsevä, F(1,43)=8.85, p=.005, eta2=0.17).
+# Iän päävaikutus ei ole merkitsevä.
+# Hormonihoidon ja iän yhdysvaikutus ei ole merkitsevä.
+
+# Tarkastellaan tuloksia laatikkokuvion avulla:
+boxplot(bentonerror_1 ~ ht_group)
+
+# Verrokkiryhmässä virhepistemäärä on korkeampi kuin hormonihoidon käyttäjäryhmässä.
+
+# ---
