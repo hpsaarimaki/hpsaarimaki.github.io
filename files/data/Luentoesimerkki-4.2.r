@@ -1,12 +1,12 @@
 # PSY.204
-# HS 18.9.2023
-# Esimerkkiaineisto: TAS
+# HS 16.9.2024
+# Esimerkkiaineisto: Blindspots and spotlights
 
 # ---
 
 # Asetetaan työskentelykansio:
 
-setwd("C:/Users/sbhesa/Documents/Opetus/PSY.204")
+setwd("C:/Users/sbhesa/OneDrive - TUNI.fi/Opetus/2024-2025/PSY.204 syksy 2024/Viikko 4 - Toistettujen mittausten varianssianalyysi")
 
 # ---
 
@@ -14,128 +14,195 @@ setwd("C:/Users/sbhesa/Documents/Opetus/PSY.204")
 
 # Ladataan aineisto
 
-tunteet <- read.csv('https://hpsaarimaki.github.io/file/data/tas.csv', sep=";")
-colnames(tunteet)[1] <- "id"
+data <- read.csv('https://hpsaarimaki.github.io/files/data/scotoma.csv')
+head(data)
 
-# Tarkastellaan aineistoa
+# Huomioi, että aineisto on pitkässä muodossa (eri koetilanteet eri riveillä).
+# Tämä on hyvä, koska tilastollisen testin ajava funktio (aov_car()) edellyttää pitkää muotoa.
 
-summary(tunteet)
+# Tarkastellaan aineistoa:
+summary(data)
 
-# Muutetaan faktorit faktoreiksi
+# Muutetaan muuttuja 'subject' faktoriksi:
 
-tunteet$id <- factor(tunteet$id)
-tunteet$sukupuoli <- factor(tunteet$sukupuoli, levels=c(1,2), labels=c("mies", "nainen"))
-tunteet$saately <- factor(tunteet$saately, levels=c(1,2,3), labels=c("valttely", "uudelleenarviointi", "kehollinen"))
-tunteet$verkosto <- factor(tunteet$verkosto, levels=c(1,2), labels=c("kognitiivinen", "affektiivinen"))
+data$subject <- factor(data$subject)
+
+# Puuttuvat arvot: puuttuvia arvoja ei näytä olevan
+
+# Kiinnitetään tietokehys:
+
+attach(data)
 
 # ---
 
 # 2. Kuvailevat tulokset
 
-# Tarkastellaan tunnuslukuja:
+# Keski- ja hajontaluvut:
 library(psych)
-describe(tunteet)
+describe(data)
 
-# Visualisoidaan aineistoa:
+# Esim. keskiarvot koetilanteittain:
 
-par(mar=c(1,1,1,1)) # säädän marginaalien kokoa pienemmäksi
-plot(tunteet) # sirontakuvio kaikkien muuttujien välillä
+mean_by_type = tapply(RT, degradation_type, mean)
+mean_by_type # näkökentän muutoksen tyyppi
 
-par(mar=c(1,1,1,1))
-plot(tunteet[3:5]) # sirontakuvio kaikkien numeeristen muuttujien välillä
+mean_by_window = tapply(RT, window_size, mean)
+mean_by_window # näkökentän muutoksen koko
 
-# Korrelaatiomatriisi numeeristen muuttujien välillä;
-corr.test(tunteet[3:5]) 
+mean_by_both = tapply(RT, list(window_size, degradation_type), mean)
+mean_by_both # näkökentän muutoksen tyyppi ja koko
 
-# Etsitään vierashavainto:
-which(tunteet$aleksitymia > 100)
-which(tunteet$empatia > 100)
+# Histogrammi:
+hist(RT, main="Reaktioajan histogrammi", ylab="Frekvenssi", xlab="Reaktioaika (ms)")
 
-# Poistetaan vierashavainto ja tallennetaan uutena tietokehyksenä:
-tunteet_valmis <- tunteet[-38,]
-
-# Tarkastellaan uutta tietokehystä:
-plot(tunteet_valmis[3:5])
-corr.test(tunteet_valmis[3:5])
-
-# Kiinnitetään lopullinen tietokehys:
-detach()
-attach(tunteet_valmis)
-
-
-# Muita visuaalisia tarkasteluja:
-
-# Ehdolliset sirontakuviot:
-
-# Empatian ja aleksitymian suhde sukupuolen mukaan:
-coplot(empatia ~ aleksitymia | sukupuoli)
-
-# Toinen vaihtoehto äskeisen kuvion piirtämiseen:
+# Histogrammiesimerkki ggplot2:lla:
 library(ggplot2)
-ggplot(tunteet_valmis, aes(x=aleksitymia, y=empatia)) +
-  stat_smooth(method = "lm") + 
-  geom_point() + 
-  facet_wrap(~ sukupuoli) 
-xyplot(empatia ~ aleksitymia | sukupuoli)
+ggplot(data, aes(x=RT)) + 
+  geom_histogram(aes(y=..density..), colour="black", fill="white")+
+  geom_density(alpha=.2, fill="#FF6666") +
+  labs(x = "Reaktioaika (ms)", y = "Osuus")
 
-# ------------
+# Laatikkokuvio:
+boxplot(RT~window_size, main="Reaktioaika koetilanteittain", ylab="Reaktioaika (ms)", xlab="Ikkunan koko")
 
-# 3. Regressiomallin rakentaminen
+# Histogrammiesimerkki ggplot2:lla:
+ggplot(data, aes(x=window_size, y=RT, fill=window_size)) +
+  geom_boxplot() +
+  labs(y = "Reaktioaika (ms)", x = "Koetilanne") + 
+  theme(legend.title=element_blank())
 
-# Yksi selittävä muuttuja (tässä aleksitymia):
-malli1 <- lm(empatia ~ aleksitymia)
-summary(malli1) # tarkastellaan mallia
+# Numeerinen yhteenveto laatikkokuviosta:
+tapply_table = tapply(RT, window_size, mean)
+tapply_table # näyttää taulukon konsolissa
 
-# Kahden selittävän muuttujan päävaikutukset:
-malli2 <- lm(empatia ~ aleksitymia + tunnesanat)
+# Tallennetaan numeerinen yhteenveto tiedostoon:
+write.csv(tapply_table, file="RT_mean_by_window_size.csv") 
 
-# Kahden selittävän muuttujan pää- ja yhdysvaikutukset:
-malli3 <- lm(empatia ~ aleksitymia * tunnesanat)
+# ---
 
-# Polynomiaalinen eli käyräviivainen suhde:
-tunteet_valmis$aleksitymia2 <- aleksitymia^2
-malli4 <- lm(empatia ~ aleksitymia + aleksitymia2)
+# 3. Mallin rakentaminen
 
-# ------------
+# Luentokalvoissa on käytetty kolmea esimerkkimallia.
+# Tallennetaan mallit tässä, tarkastellaan niitä tarkemmin seuraavissa vaiheissa.
 
-# 4. Oletusten tarkastelu
+# Esimerkki 1: näkökentän muutoksen koon päävaikutus
+library(afex)
+A1 <- aov_car(RT~Error(subject/window_size), data=data, fun_aggregate=mean)
+# Tässä esimerkissä säädetään argumentti fun_aggregate=mean, koska samalle koetilanteelle on aineistossa useampi rivi per osallistuja.
 
-# Näytetään diagnostiset kuviot mallille 1:
-layout(matrix(c(1,2,3,4),2,2)) # säätää kuvan asettelua
-plot(malli1)
+# Esimerkki 2: näkökentän muutoksen koon ja tyypin pää- ja yhteisvaikutukset:
+A2 <- aov_car(RT~Error(subject/(degradation_type*window_size)), data=data)
 
-# Cookin etäisyydet
-influence.measures(malli1)
+# Esimerkki 3: ryhmän päävaikutus ja näkökentän muutoksen koon ja tyypin pää- ja yhteisvaikutukset:
+# Lisätään aineistoon ensin muuttuja kuvaamaan ryhmää.
+# Tässä esimerkissä ryhmä on täysin satunnainen, joten sillä ei pitäisi olla vaikutusta reaktioaikaan.
+data$group <- rep(1:2, each=84)
+data$group <- factor(data$group)
+A3 <- aov_car(RT~group + Error(subject/(degradation_type*window_size)), data=data)
 
-# Homoskedastisuus
-library(car)
-ncvTest(malli1)
+# -----
 
-# Jäännöstermien kuvaajat
-library(ggResidpanel)
-resid_panel(malli1)
+# 5. Oletusten testaaminen
 
-# ----------
+# Vierashavainnot:
 
-# 5. Tulosten tarkastelu
+# Tarkastellaan laatikkokuviota:
+boxplot(RT~window_size*degradation_type, main="Reaktioaika koetilanteittain", ylab="Reaktioaika (ms)", xlab="Ikkunan koko")
 
-# Perustarkastelut mallille 1:
-summary(malli1)
-anova(malli1)
+# Tarkastellaan laatikkokuvion tuloksia numeerisesti:
+library(rstatix)
+# Koko aineistolle:
+data %>%
+  identify_outliers(RT)
+# Koetilanteittan:
+data %>%
+  group_by(window_size, degradation_type) %>%
+  identify_outliers("RT")
 
-# Perustarkastelut mallille 2:
-summary(malli2)
+# Aineistossa ei ole merkittävästi poikkeavia havaintoja.
 
-# Diagnostiset kuviot:
-layout(matrix(c(1,2,3,4),2,2)) # säätää kuvan asettelua
-plot(malli2)
+# Residuaalien normaalijakautuneisuus, esimerkkinä malli 1:
+library(performance)
+A1_is_norm <- check_normality(A1)
+A1_is_norm # näyttää arvion residuaalien normaalijakautuneisuudesta
 
-# Multikolineaarisuus
-cor.test(aleksitymia,tunnesanat)
-library(car)
-vif(malli2)
+# Vertailu normaalijakaumaan:
+plot(A1_is_norm) # jakauman muoto
+plot(A1_is_norm, type = "qq") ## qq-kuvio
+plot(A1_is_norm, type = "qq", detrend = TRUE) # qq-kuvio projisoituna
 
-# Mallien vertailu
-anova(malli1, malli2)
+# Residuaalien normaalijakautuneisuus mallille 2:
+A2_is_norm <- check_normality(A2)
+A2_is_norm
 
-# --------
+# Residuaalien normaalijakautuneisuus mallille 3:
+A3_is_norm <- check_normality(A3)
+A3_is_norm
+
+# Residuaalit ovat normaalijakautuneita kaikissa malleissa.
+
+# Varianssien yhtäsuuruus:
+check_sphericity(A1) 
+check_sphericity(A2)
+check_sphericity(A3)
+
+# Varianssit eivät ole yhtäsuuria missään mallissa.
+# Käytetään sfäärisyyskorjauksia ANOVAn yhteydessä (ks. seuraava vaihe).
+
+# ---
+
+# 5. Tilastollisen testin tulosten tarkastelu
+
+# Malli 1:
+summary(A1)
+# Efektikoko:
+anova(A1, es="pes")
+# Post hoc -testi:
+library(emmeans)
+posthoc <- emmeans(A1, specs=pairwise ~ window_size, adjust = "holm")
+posthoc$contrasts
+# Näytön muutoksen koko vaikuttaa reaktioaikaan (F(2,54)=65.45, p[GG]<.001, pes=0.71)
+# Ero on merkitsevä pienen ja keskikokoisen sekä pienen ja ison näytön koon välillä.
+
+
+# Malli 2:
+summary(A2)
+# Efektikoko:
+anova(A2, es="pes")
+# Näytön muutoksen koon ja tyypin yhteisvaikutus reaktioaikaan on tilastollisesti merkitsevä (F2,54)=44.71, p<.001, pes=0.62).
+# Myös näytön muutoksen tyypin päävaikutus on merkitsevä (F(1,27)=330.93, p<.001, pes=0.92).
+# Kuten myös näytön muutoksen koon päävaikutus (F(2,54)=65.60, p[GG]<.001, pes=0.71).
+
+# Malli 3:
+summary(A3)
+# Efektikoko:
+anova(A3, es="pes")
+# Ryhmän vaikutus ei ole tilastollisesti merkitsevä eikä sillä ole myöskään merkitsevää yhteisvaikutusta koetilanteiden kanssa.
+# Muut tulokset ovat samat kuin yllä kuvatut.
+
+# ---
+
+# 6. Raportointi
+
+# Interaktiokuvaaja mallille 2:
+
+detach(data)
+attach(data)
+interaction.plot(window_size, degradation_type, RT,
+                 type="b", col=c(1:2),
+                 leg.bty="o",leg.bg="beige",
+                 lwd=2, pch=c(18,18),
+                 xlab="Window size",
+                 ylab="Reaction time (ms)",
+                 main="Interaction plot")
+
+# Numeerinen yhteenveto interaktiokuvaajasta:
+
+tapply_table = tapply(RT, list(degradation_type, window_size), mean)
+tapply_table
+
+write.csv(tapply_table, file="RT_mean_by_condition.csv") # tallennetaan tiedostoon
+
+
+# ---
+
