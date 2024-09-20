@@ -1,337 +1,277 @@
-# PSY204
-# Harjoitusmoniste R4.1
-# Heini Saarimäki 17.9.2023
+# R-harjoitusmoniste R4.1
+# Toistettujen mittausten varianssianalyysi
+# PSY204 syksy 2024
+# HS 12.9.2024
 
 # ---
 
-# 1. Aineiston valmistelu
+# Ennen aloitusta siirry haluamaasi työskentelykansioon, esim:
+setwd("C:/Users/sbhesa/OneDrive - TUNI.fi/Opetus/2024-2025/PSY.204 syksy 2024/Harjoitukset")
 
-# Asetetaan työskentelykansio:
-setwd('C:/Users/sbhesa/Documents/Opetus')
+# ---
 
-# Ladataan aineisto:
-data <- read.table('https://hpsaarimaki.github.io/files/data/students.txt', header=T, sep="",na.strings="NA")
+# 1. Aineiston lataaminen ja valmistelu
 
-# Tarkastellaan aineistoa:
-head(data)
+# Lataa aineisto:
+data <- read.csv('https://bit.ly/PSY204_hitfeelshit1')
+
+# Tarkastele aineistoa:
 summary(data)
 
+# Poista turha sarake X:
+data$X <- NULL
+
 # Kysymys 1:
-# Extra-muuttujassa on paljon puuttuvia arvoja, jotka on valmiiksi koodattu NA:lla.
-# Stress-muuttujan maksimiarvo on epäilyttävän korkea.
-# Tutkitaan Stress-muuttujaa tarkemmin laatikkokuviolla:
-boxplot(data$Stress)
-# Huomataan, että arvo 999 poikkeaa muista arvoista huomattavasti.
-# Etsitään, millä rivillä arvo 999 datassa on:
-which(data$Stress == 999)
-# Arvo 999 löytyy viideltä riviltä.
+summary(data)
+# Kategoriset muuttujat eli faktorit: 
+# RYHMA (2 luokkaa), HARJOITUS (6 luokkaa), VETO (4 luokkaa)
+# Numeeriset muuttujat:
+# UUPUMUS, EPAMIELLYTTAVYYS, KIIHTYNEISYYS
 
 # Kysymys 2:
-# Luodaan uusi tietokehys:
-data2 <- data
-# Tehdään poikkeavien arvojen korjaus vain uudelle tietokehykselle data2.
-# Muutetaan poikkeavat arvot R:n ymmärtämiksi puuttuviksi arvoiksi (NA):
-data2[which(data2$Stress == 999),7] <- NA # huom. Stress-muuttuja sarakkeessa 7
-# Tarkastellaan muutoksen vaikutuksia:
-summary(data2)
-boxplot(data2$Stress)
-# Hyvältä näyttää!
+# Jokainen osallistuja kuuluu joko ryhmään HIIT tai MICT, joten RYHMA on lohkotekijä.
+# Käsittelytekijät ovat harjoitus ja veto. Jokaisessa kuudessa harjoituksessa on neljä vetoa.
 
 # Kysymys 3:
-# Voit tarvittaessa vertailla tekemiesi muutosten (esim. datamuunnokset)
-# vaikutusta analyysiesi tuloksiin.
 
-# Kiinnitetään muokattu tietokehys:
-detach() # irrotetaan mahdolliset aiemmat tietokehykset
-attach(data2)
+# Muutetaan kategoriset muuttujat ID, RYHMA, HARJOITUS ja VETO faktoreiksi.
+data$ID <- factor(data$ID)
+data$RYHMA <- factor(data$RYHMA)
+data$VETO <- factor(data$VETO)
+data$HARJOITUS <- factor(data$HARJOITUS)
+summary(data)
+# Puuttuvia eikä muuten epäilyttäviä arvoja ei näytä olevan:
+boxplot(data$UUPUMUS)
+boxplot(data$EPAMIELLYTTAVYYS)
+boxplot(data$KIIHTYNEISYYS)
+
+# Kiinnitetään aineisto:
+attach(data)
 
 # ---
 
 # 2. Kuvailevat tulokset
 
-# Tulostetaan tunnusluvut:
-library(psych)
-describe(data2)
-
 # Kysymys 4:
-# Muuttuja "Entry" on mitattu vain 37 osallistujalta.
+length(unique(data$ID))
+# Faktori ID saa 26 eri arvoa, joten aineistossa on 26 osallistujaa.
 
 # Kysymys 5:
-
-# Tulostetaan histogrammit:
-hist(Performance)
-hist(Hours)
-hist(Educ)
-hist(Rating)
-hist(Entry)
-hist(Extra)
-hist(Stress)
-
-# Huomataan, että muuttujan Extra jakauma on vino.
-# Lisäksi huomataan, että muuttuja Educ on diskreetti. Opiskeluvuosien määrä on mitattu kokonaisina vuosina.
+hist(EPAMIELLYTTAVYYS)
+# Epämiellyttävyys on kohtuullisen normaalisti jakautunut.
 
 # Kysymys 6:
-
-# Tarkastellaan sirontakuvioita:
-plot(Performance,Hours)
-plot(data2)
-
-# Loppukokeen arvosanan ja poissaolotuntien välillä näyttää olevan negatiivinen korrelaatio.
-# Loppukokeen arvosanan, kurssiarvioinnin ja stressin välillä näyttää olevan positiivinen korrelaatio.
-# Loppukokeen arvosanan ja alkutestin välillä ei näytä olevan voimakasta korrelaatiota.
-# Opiskeluvuosien diskreetti asteikko tekee korrelaatioiden tulkinnasta hankalaa.
-# Lisäharjoitusten vaikutusta on vaikea tulkita, koska aineistoa on niin vähän.
-
-# ---
-
-# 2. Korrelaatiot
-
-# 2.1 Pearson
-
-# Kahden muuttujan välinen korrelaatio:
-cor.test(Performance, Hours)
-
-# Kahden muuttujan välinen sirontakuvio:
-plot(Performance, Hours)
-
-# Koko aineiston korrelaatiomatriisi:
-corr.test(data2)
+boxplot(EPAMIELLYTTAVYYS ~ RYHMA)
 
 # Kysymys 7:
-# Seuraavat korrelaatiot eivät ole merkitseviä monivertailukorjausten jälkeen:
-# Loppukokeen arvosana ja opiskeluvuodet, alkutestin tulos, lisätehtävien määrä ja stressi eivät korreloi.
-# Poissaolotunnit ja opiskeluvuosien lukumäärä, alkutestin arvosana sekä lisätehtävien määrä eivät korreloi.
-# Opiskeluvuosien lukumäärä korreloi vain poissaolotuntien kanssa.
-# Arviointi ja alkutestin tulos, lisätehtävien määrä ja stressi eivät korreloi.
-# Alkutesti korreloi vain poissaolotuntien ja opiskeluvuosien kanssa.
-# Lisätehtävät eivät korreloi minkään muuttujien kanssa.
-# Stressitaso korreloi vain poissaolotuntien kanssa.
+epamiellyttavyys_ryhmittain = tapply(EPAMIELLYTTAVYYS, RYHMA, mean)
+epamiellyttavyys_ryhmittain
 
 # Kysymys 8:
-# Maksimiotoskoko on 228, minimi 37.
-# Minimi koskee lisätuntimuuttujaa, jossa oli vain vähän havaintoja.
-# Lisätunnit ei ole luotettava muuttuja, koska havaintoja on vain pieneltä osajoukolta.
+boxplot(EPAMIELLYTTAVYYS ~ HARJOITUS)
+# Koettu epämiellyttävyys on keskimäärin korkea kahden ensimmäisen harjoituskerran aikana, mutta tasaantuu sitten.
 
 # Kysymys 9:
-# Ei päde. Opiskeluvuodet, alkutestin tulos ja lisätehtävät eivät vaikuta suoritustasoon.
+boxplot(EPAMIELLYTTAVYYS ~ VETO)
+# Koettu epämiellyttävyys kasvaa harjoituksen aikana.
 
-# Kysymys 10:
-# Eivät ole.
-# Poissaolotuntien lukumäärä korreloi negatiivisesti muiden muuttujien kanssa.
-# Samoin lisätehtävien määrä korreloi negatiivisesti suoritustason, poissaolotuntien ja kurssin arvioinnin kanssa.
-# Lisätehtävien määrä ei kuitenkaan ole luotettava muuttuja, koska sillä on paljon puuttuvia arvoja.
-# Emme tiedä tarkasti, miksi tällä muuttujalla on paljon puuttuvia arvoja.
+# -----
+
+# 3. Toistettujen mittausten varianssianalyysi
 
 # -
 
-# 2.2 Spearman
-
-# Spearmanin korrelaatio kurssin loppuarvosanan ja poissaolotuntien välillä:
-cor.test(Performance, Hours, method="spearman")
-
-# Testi antaa varoituksen, koska Hours-muuttujassa on useampia yhtä suuria arvoja.
-# Siksi järjestyksen tarkka laskeminen ei onnistu. R ei huomioi yhtä suuria arvoja.
-
-# Varoituksen voi välttää näin:
-cor.test(Performance, Hours, method="spearman", exact=FALSE)
-
-# Huomataan, että tulokset ovat samat.
-
-# Kysymys 10:
-corr.test(data2, method="spearman")
-
-# Kysymys 11:
-# Tallenna korrelaatiomatriisit:
-pearson <- corr.test(data2[c(1:2,4:7)])
-spearman <- corr.test(data2[c(1:2,4:7)], method="spearman")
-# Tutki objektin rakennetta:
-str(pearson)
-# Näytä esim. p-arvot molemmille objekteille:
-pearson$p
-# ...liikaa desimaaleja, kokeillaan sen sijaan:
-round(pearson$p,2)
-round(spearman$p,2)
-# Testit antavat muuten samat tulokset, mutta stressin ja suoriutumisen yhteys ei ole merkitsevä 
-# Spearmanin korrelaatiokerrointa käytettäessä.
+# 3.1 Muuttuuko koettu epämiellyttävyys harjoituskerran aikana?
 
 # -
 
-# 2.3 Osittaiset korrelaatiot
+# Mallin rakentaminen:
 
-# Asenna tarvittaessa: install.packages('ppcor')
-library(ppcor)
-pcor.test(Performance, Entry, Hours)
+# Ladataan kirjasto (asenna 'afex' tarvittaessa):
+library(afex)
 
-# Huomataan, että suoritustaso ja alkutesti eivät korreloi merkitsevästi,
-# kun poissaolotuntien vaikutus on huomioitu (p=-.05, p=.449).
+# Malli A1:
+A1 <- aov_car(EPAMIELLYTTAVYYS~Error(ID/VETO), data=data, fun_aggregate=mean)
+
+# -
+
+# Oletusten testaaminen:
+
+# Vierashavainnot;
+library(dplyr)
+library(rstatix)  # lataa tarvittava kirjasto, asenna tarvittaessa ensin
+
+# Koko aineisto
+data %>%
+  identify_outliers(EPAMIELLYTTAVYYS)
+# ei vierashavaintoja
+
+# Koetilanteittan harjoitusryhmän mukaan:
+vierashavainnot <- data %>%
+  group_by(RYHMA, HARJOITUS, VETO) %>%
+  identify_outliers("EPAMIELLYTTAVYYS")
+print(vierashavainnot, n=23)
+
+# Vierashavainnot eivät ole merkitsevästi poikkeavia.
+
+# Jäännöstermien normaalijakautuneisuus:
+library(performance)     # ladataan avuksi
+A1_is_norm <- check_normality(A1)
+A1_is_norm
+plot(A1_is_norm, type="qq")
+# Jäännöstermit ovat normaalisti jakautuneet
+
+# Varianssien yhtäsuuruus eli sfäärisyys:
+check_sphericity(A1)
+# Sfäärisyys ei toteudu, tämä huomioidaan analyysissa.
+
+# -
+
+# Tulosten tarkastelu:
+
+# Tutkitaan tunnuslukuja:
+summary(A1)
+# Efektikoko:
+library(effectsize)
+eta_squared(A1)
+
+# Koettu epämiellyttävyys muuttuu tilastollisesti merkitsevästi yhden harjoituskerran aikana (F(3,75)=59.39, p[GG]<.001).
+# Tulosten tarkasteluun käytettiin Greenhouse-Geisserin sfäärisyyskorjausta, koska varianssit eivät olleet joka solussa yhtä suuret.
+
+# Tarkastellaan eri vetojen epämiellyttävyyden keskiarvoja:
+tapply(EPAMIELLYTTAVYYS, VETO, mean)
+# Epämiellyttävyys kasvaa harjoituksen aikana (veto 1: 3.6, veto 2: 4.4, veto 3: 5.1, veto 4: 5.5).
+
+# Näytetään tulokset tuunattuna laatikkokuviona:
+library(ggplot2) # ladataan kirjasto, asenna tarvittaessa
+ggplot(data, aes(x=VETO, y=EPAMIELLYTTAVYYS)) +
+  geom_boxplot() +
+  labs(y = "Epämiellyttävyys", x = "Vedon järjestysnumero") + 
+  theme(legend.title=element_blank())
+
+# Posthoc-testit:
+library(emmeans)
+A1_posthoc <- emmeans(A1, specs=pairwise ~ VETO, adjust = "holm")
+A1_posthoc
+# Kaikkien vetoparien erot ovat tilastollisesti merkitseviä.
 
 # ---
 
-# 3. Regressio
-
-# 3.1 Yksinkertaisen mallin ajaminen
-
-# Tallennetaan ensimmäinen malli:
-model1 <- lm(Performance ~ Hours)
-
-# Tutkitaan mallia:
-summary(model1)
+# 3.2 Vaihteleeko harjoituskerran aikana koettu epämiellyttävyys koko harjoitusjakson aikana aikana?
 
 # -
 
-# 3.2 Oletusten arviointi
+# Mallin rakentaminen:
 
-# Normaalijakautuneisuus:
-layout(matrix(c(1,2,3,4),2,2)) # säätää kuvan asettelua
-plot(model1)
-
-# Lisäksi residuaalien histogrammit:
-library(ggResidpanel)
-resid_panel(model1)
-
-# Homoskedastisuus:
-library(car)
-ncvTest(model1)
-
-# Vaikuttavat havainnot:
-influence.measures(model1)
+# Malli A2:
+A2 <- aov_car(EPAMIELLYTTAVYYS~Error(ID/HARJOITUS*VETO), data=data)
 
 # -
 
-# 3.3 Useamman muuttujan regressio
+# Oletusten testaaminen:
 
-# Luodaan malli:
-model2 <- lm(Performance ~ Hours + Entry)
+# Vierashavainnot tarkasteltiin jo kohdassa 3.1, ne eivät ole merkitsevästi poikkeavia.
 
-# Oletusten tarkastelu:
+# Jäännöstermien normaalijakautuneisuus:
+A2_is_norm <- check_normality(A2)
+A2_is_norm
+plot(A2_is_norm, type="qq")
+# Jäännöstermit eivät ole normaalisti jakautuneet
 
-# Normaalijakautuneisuus:
-layout(matrix(c(1,2,3,4),2,2)) # säätää kuvan asettelua
-plot(model2)
-
-# Lisäksi residuaalien histogrammit:
-resid_panel(model2)
-
-# Homoskedastisuus:
-ncvTest(model2)
-
-# Vaikuttavat havainnot:
-influence.measures(model2)
-
-# Multikollineaarisuus:
-cor.test(Hours, Entry)
-library(car)
-vif(model2)
-
-# Kysymys 12:
-summary(model2)
-# Alkutestin pistemäärä ei ole merkitsevä selittäjä.
-
-# Kysymys 13:
-anova(model1, model2)
-# Toinen malli ei ole ensimmäistä parempi.
-
-# Kysymys 14:
-# Poistetaan alkutesti eli "Entry" mallista.
-
-# Kysymys 15:
-# Kokeillaan ajaa uusi malli:
-model3 <- lm(Performance ~ Hours + Extra)
-summary(model3)
-# Summary kertoo, että mallista poistettiin 191 havaintoa,
-# koska ne puuttuvat muuttujasta Extra.
-# Malli on siis muodostettu varsin pienellä osajoukolla koko aineistosta
-# eikä siksi ole luotettava.
-
-# Kysymys 16:
-model4 <- lm(Performance ~ Hours + Rating)
-
-# Kysymys 17:
-summary(model4)
-# Rating on merkitsevä selittäjä.
- 
-# Kysymys 18:
-anova(model1,model4)
-# Malli 4 on merkitsevästi parempi kuin ensimmäinen.
-
-# Kysymys 19:
-# Adjusted R^2 eli muokattu R^2.
-
-# Kysymys 20:
-# 12% varianssista.
+# Varianssien yhtäsuuruus eli sfäärisyys:
+check_sphericity(A2)
+# Sfäärisyys ei toteudu, tämä huomioidaan analyysissa.
 
 # -
 
-# 3.4 Yhdysvaikutuksen lisääminen malliin
+# Tutkitaan tunnuslukuja:
+summary(A2)
+# Efektikoko:
+eta_squared(A2)
 
-# Luodaan malli:
-model5 <- lm(Performance ~ Hours * Rating)
-summary(model5)
 
-# Kysymys 21:
-# Päävaikutukset.
+# Harjoituksen aikaisen epämiellyttävyyden kokeminen ei muutu harjoittelun myötä (F(15,375)=1.36, p[GG]=.23).
+# Harjoituksen aikana epämiellyttävyys muuttuu (F(3,75)=59.4, p[GG]<.001).
+# Epämiellyttävyys muuttuu myös harjoituskertojen myötä (F(5,125)=6.4, p[GG]<.01).
 
-# Kysymys 22:
-cor.test(Hours,Rating)
-# Ovat, niiden välinen korrelaatio on r=-.26, p<.001.
+# Tarkastellaan eri vetojen epämiellyttävyyden keskiarvoja eri harjoituskerroilla:
+tapply(EPAMIELLYTTAVYYS, list(VETO,HARJOITUS), mean)
 
-# Kysymys 23:
-anova(model4,model5)
-# Yhdysvaikutuksen lisääminen ei paranna mallia.
+# Näytetään tulokset interaktiokuviona:
+interaction.plot(VETO, HARJOITUS, EPAMIELLYTTAVYYS,
+                 type="b", col=c(1:6),
+                 leg.bty="o",leg.bg="beige",
+                 lwd=2, pch=c(18,18),
+                 xlab="VETO",
+                 ylab="EPAMIELLYTTAVYYS",
+                 main="Interaktiokuvio")
+# Kuvio näyttää eri harjoituskertojen aikaisen koetun epämiellyttävyyden muutoksen.
+# Epämiellyttävyys kasvaa aina harjoituskerran aikana.
+# Ensimmäisessä harjoituksessa koettu epämiellyttävyys on suurin.
+# Koettu epämiellyttävyys laskee harjoittelun myötä.
 
-# -
+# Post hoc-testit:
+# Post hoc -testi vetoparien vertailulle tehtiin jo osiossa 3.1.
+# Testataan vielä harjoituskertojen parittaiset vertailut:
+A2_posthoc <- emmeans(A2, specs=pairwise ~ HARJOITUS, adjust = "holm")
+A2_posthoc$contrasts
+# Bonferroni-Holm-korjauksen jälkeen merkitsevä ero löytyy vain 
+# ensimmäisen ja viimeisen harjoituksen väliltä (t(25)=3.41, p<.05).
 
-# 3.5 Polynomiaaliset yhteydet
-
-# Lisätään uusi muuttuja Rating2:
-data2$Rating2 <- Rating^2
-attach(data2)
-
-# Kysymys 24:
-# y ~ x + x^2
-
-# Ajetaan uusi malli:
-model6 <- lm(Performance ~ Rating + Rating2)
-
-# Kysymys 25:
-summary(model6)
-# Rating2 ei ennusta suoritustasoa
-# Ratingin ja suoritustason yhteys ei ole polynomiaalinen
-
-# Ajetaan uusi malli:
-model7 <- lm(Performance ~ Hours*Educ*Rating*Entry*Stress)
-# Jätettiin pois Extra, jossa oli vähän havaintoja
-
-# Kysymys 26:
-summary(model7)
-# R^2-arvo on suurempi, muokattu R^2-arvo pienempi 
-
-# Kysymys 27:
-# Malli 7 on monimutkaisempi, mikä huomioidaan
-# muokattua selitysastetta laskiessa.
 
 # ---
 
-# 4. Lisämateriaalia: kontrastit
+# 3.3 Onko ryhmien välillä eroa siinä, miten epämiellyttävyys
+# vaihtelee harjoituskerran aikana?
 
-# 4.1 Kontrastien rakentaminen
+# -
 
-# Muutetaan Education kategoriseksi muuttujaksi:
-data2$Educ <- factor(data2$Educ)
-attach(data2)
+# Mallin rakentaminen:
+A3 <- aov_car(EPAMIELLYTTAVYYS~RYHMA + Error(ID/VETO), data=data, fun_aggregate = mean)
 
-# Tarkistetaan kategorisen muuttujan tasot:
-levels(Educ)
+# -
 
-# Määritetään kontrastit:
-contrasts(Educ) <- cbind(c(-0.5,-0.5,1),c(1,-1,0))
+# -
 
-# Tarkistetaan kontrastit:
-contrasts(Educ)
+# Oletusten testaaminen:
 
-# 4.2 Kontrastien ajaminen
+# Vierashavainnot tarkasteltiin jo kohdassa 3.1, ne eivät ole merkitsevästi poikkeavia.
 
-# Tallennetaan malli ja tarkastellaan sitä:
-M1 <- lm(Performance ~ Educ)
-summary(M1)
+# Jäännöstermien normaalijakautuneisuus:
+A3_is_norm <- check_normality(A3)
+A3_is_norm
+plot(A3_is_norm, type="qq")
+# Jäännöstermit eivät ole normaalisti jakautuneet
 
+# Varianssien yhtäsuuruus eli sfäärisyys:
+check_sphericity(A3)
+# Sfäärisyys ei toteudu, tämä huomioidaan analyysissa.
+
+# -
+
+# Tulosten tarkastelu ja raportointi:
+
+# Malli A3:
+summary(A3)
+# Efektikoko:
+eta_squared(A3)
+
+# Ryhmät eroavat toisistaan vain harjoituskerran sisäisen muutoksen osalta (ryhmän ja vedon yhteisvaikutus, F(3, 72)=8.6, p[GG]<.01).
+# Epämiellyttävyyden muutos harjoituskerran sisällä riippuu siis ryhmästä.
+# Vedon päävaikutus on merkitsevä, eli harjoituskerran sisällä tapahtuu myös keskimäärin muutosta (F(3,72)=77.4, p[GG]<.001)
+
+# Näytetään tulokset interaktiokuviona:
+interaction.plot(VETO, RYHMA, EPAMIELLYTTAVYYS,
+                 type="b", col=c(1:6),
+                 leg.bty="o",leg.bg="beige",
+                 lwd=2, pch=c(18,18),
+                 xlab="VETO",
+                 ylab="EPAMIELLYTTAVYYS",
+                 main="Interaktiokuvio")
+# Harjoituskerran aikana koettu epämiellyttävyys kasvaa jyrkemmin HIIT-ryhmässä.
+
+# Post hoc -testi:
+# Vetoparien vertailu tehtiin jo kohdassa 3.1.
+# Testataan vielä yhdysvaikutuksen tulkitsemisen avuksi:
+A3_posthoc <- emmeans(A3, specs=pairwise ~ RYHMA:VETO, adjust="holm")
+A3_posthoc$contrasts
