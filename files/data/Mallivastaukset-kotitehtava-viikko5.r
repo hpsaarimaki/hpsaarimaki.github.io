@@ -1,217 +1,147 @@
-# PSY204
-# Kotitehtävät, viikko 5
+# PSY.204 syksy 2024
 # Mallivastaukset
-# Heini Saarimäki 7.10.2022
+# Kotitehtävät viikko 5
+# Heini Saarimäki
 
-# -----
+# ---
+
+# Aseta työskentelykansio
+setwd('C:/Users/sbhesa/OneDrive - TUNI.fi/Opetus/2024-2025/PSY.204 syksy 2024/Kotitehtävät/')
+
+# Lataa aineisto, aseta desimaalimerkiksi pilkku
+library(openxlsx)
+robo <- read.xlsx('Linnunsalo2023.xlsx')
+
+# ---
 
 # 1. Aineiston valmistelu
 
-# Asetetaan työskentelykansio
-setwd("C:/Users/sbhesa/Documents/Opetus/2022-2023/PSY204 - syksy 2022/Kotitehtävät")
+# Muutetaan aineisto leveästä pitkään muotoon:
+library(tidyr)
+robo_long <- robo %>%
+  pivot_longer(
+    cols = c("N170-left.DIR", "N170-left.AVE", "N170-right.DIR", "N170-right.AVE", 
+             "P300-left.DIR", "P300-left.AVE", "P300-right.DIR", "P300-right.AVE"),
+    names_to = c(".value", "Hemisphere", "Gaze"),  # Luo uudet sarakkeet
+    names_pattern = "(.*)-(.*)\\.(.*)"             # Uusien sarakkeiden nimien erottelu
+  )
 
-# Ladataan valmis aineisto:
+# Tarkista muuttujien tietotyypit
+summary(robo_long)
 
-suvilehto <- read.csv('https://hpsaarimaki.github.io/files/data/suvilehto_clean.csv', sep=";")
-suvilehto$X <- NULL # poistan ylimääräisen sarakkeen
+# Kategoriset muuttujat faktoreiksi
+robo_long$ID <- factor(robo_long$ID)
+robo_long$Group <- factor(robo_long$Group)
+robo_long$Hemisphere <- factor(robo_long$Hemisphere)
+robo_long$Gaze <- factor(robo_long$Gaze)
 
-# Tarkastellaan aineistoa:
-summary(suvilehto)  
-dim(suvilehto) # kertoo tietokehyksen rivien ja sarakkeiden määrät
-# Puuttuvia havaintoja on paljon (N=2236), mutta toisaalta N=9615 eli
-# aineistoa jää silti yllin kyllin.
+# Tarkista muutokset
+summary(robo_long)
 
-# Muutetaan faktorit faktoreiksi:
-suvilehto$subid <- factor(suvilehto$subid)
-suvilehto$sex <- factor(suvilehto$sex)
-suvilehto$country <- factor(suvilehto$country)
-suvilehto$person <- factor(suvilehto$person)
+# Poista huonolaatuiset osallistujat 15, 20 ja 59
+# Tarkista rivit, joilla nämä osallistujat sijaitsevat:
+which(robo_long$ID %in% c(15, 20, 59))
+# Poista nämä rivit:
+robo_final <- robo_long[-(which(robo_long$ID %in% c(15, 20, 59))),]
 
-# Tarkastelen vielä muutoksia
-summary(suvilehto) 
-# Kiinnostavaa: sarake subid kertoo, että yhdeltä osallistujalta on 15 havaintoriviä
-# eli käytännössä tässä aineistossa arviot jokaisen 15 henkilön (äiti, puoliso jne)
-# tunnesiteestä, kosketuksen miellyttävyydestä ja eri kehonosien kosketettavuudesta.
+# Tarkista muutokset
+summary(robo_final)
 
-# Kiinnitetään aineisto:
-attach(suvilehto)
+# Poikkeavien havaintojen tarkastelu:
+boxplot(robo_final$N170)
+boxplot(robo_final$P300)
+
+# Kiinnitä tietokehys
+attach(robo_final)
 
 # ---
 
 # 2. Aineiston tarkastelu
 
-# Tallennetaan keski- ja hajontaluvut jatkuville muuttujille:
-keskiluvut <- describe(suvilehto[c(3,6:10)])
-write.csv(keskiluvut, 'suvilehto_keskiluvut.csv')
+# Tarkista, kuinka monta osallistujaa per ryhmä lopullisessa aineistossa on:
+length(unique(robo_final$ID))
+length(unique(subset(robo_final, Group==0)$ID))
+length(unique(subset(robo_final, Group==1)$ID))
 
-# Tallennetaan frekvenssit kategorisille muuttujille:
-frekvenssit <- summary(suvilehto[c(2,4:5)])
-write.csv(frekvenssit, 'suvilehto_frekvenssit.csv')
+# Tarkista P300-vasteen keskiarvot ja -hajonnat kummallekin ryhmälle erikseen eri koetilanteissa.
+# Käytä keskiarvoa hemisfäärien yli.
 
-# Tarkastellaan, korreloivatko eri kehonosien kosketettavuudet keskenään:
-library(psych)
-corr.test(suvilehto[c(8:10)])
-# Kaikki korrelaatiot ovat merkitseviä:
-# Kasvot ja kädet: r=0.4, p<.001
-# Kasvot ja jalat: r=0.67, p<.001
-# Kädet ja jalat: r=0.35, p<.001
+tapply(P300, list(Group, Gaze), mean) # keskiarvo
+tapply(P300, list(Group, Gaze), sd) # keskihajonta
 
-# Tarkastele laatikkokuvioiden avulla, eroaako eri kehonosien sallittavuusindeksi eri kulttuureissa. 
-boxplot(face ~ country) # UK kasvoja saa koskea enemmän
-boxplot(hand ~ country) # ei selkeitä kulttuurieroja
-boxplot(leg ~ country)  # ei selkeitä kulttuurieroja tässä kuviossa, mutta
-                        # jakauman vinous peittää efektiä alleen
+# Tulosta laatikkokuvio, jossa näkyy P300-vaste erikseen kummallekin ryhmälle, koetilanteelle ja hemisfäärille.
+boxplot(P300~Gaze+Group+Hemisphere)
 
-# Tarkastellaan vielä histogrammeja, koska laatikkokuvioissa
-# etenkin jalkojen osalta jakauma näytti vinolta:
-par(mfrow=c(1,3)) 
-hist(face)
-hist(hand)
-hist(leg)
-# Jakaumat ovat todella vinoja, suurin osa osallistujista ei halua
-# että kukaan koskee kasvoihin, käsiin tai jalkoihin.
-
-# Datamuunnoksia voisi harkita, mutta niitä ei käytetty alkuperäisessä
-# artikkelissa. Jatketaan siis alkuperäisten muuttujien kanssa
-# huomioiden, että normaalijakaumaoletus ei täyty.
+# Kuvaile havaintosi sanallisesti.
 
 # ---
 
-# 3. Regressioanalyysi
+# 3. Mallin luominen
 
-# Tutkimuskysymys:
-# Vaikuttaako kulttuuritausta ja suhteen laatu kosketuksen sallittavuuteen eri kehonosissa?
+# Testaa ryhmän (Group), katseen suunnan (Gaze) ja aivopuoliskon (Hemisphere) pää- ja yhdysvaikutukset P300-vasteeseen.
 
-# -
+library(afex)
+A1 <- aov_car(P300 ~ Group + Error(ID/Gaze*Hemisphere), data=robo_final)
 
-# Kasvot
 
-# Testataan kahta eri mallia kasvoille:
-lm1 <- lm(face~country+bond, data=suvilehto)
-lm2 <- lm(face~country*bond, data=suvilehto)
+#---
 
-# Oletukset:
-plot(lm1)
-# Lineaarisuusoletus ei vaikuta täyttyvän.
-# Residuaalien normaalisuusoletus ei täyty.
-# Residuaalien homoskedastistuus ei täyty, enemmän virheitä kun kosketettavuus kasvaa.
-# Ei merkittäviä vierashavaintoja.
-# Havaintojen riippumattomuus ei täyty, koska samalta osallistujalta
-# useampi havainto.
+# 4. Oletusten tarkastelu
 
-plot(lm2)
-# Samat ongelmat:
-# Lineaarisuusoletus ei vaikuta täyttyvän.
-# Residuaalien normaalisuusoletus ei täyty.
-# Residuaalien homoskedastistuus ei täyty, enemmän virheitä kun kosketettavuus kasvaa.
-# Ei merkittäviä vierashavaintoja.
-# Havaintojen riippumattomuus ei täyty.
+# P300-vaste:
 
-# Tarkastelu:
-summary(lm1)
-summary(lm2)
+# Vierashavainnot:
+library(dplyr)
+library(rstatix)  # lataa tarvittava kirjasto, asenna tarvittaessa ensin
 
-# Kumpi malli on parempi?
-anova(lm1,lm2)
-# Malli 2 sopii aineistoon paremmin, joten raportoidaan tulokset sen osalta:
-# Kulttuurin ja tunnesiteen pää- ja yhdysvaikutukset sisältävä malli sopii 
-# aineistoon ja selittää 15% kasvojen kosketettavuuden vaihtelusta 
-# (F2, 7375)=424, p<.001, muokattu R^2=.15).
-# Kulttuuri vaikuttaa siihen, miten tunneside ennustaa kasvojen kosketettavuutta (beta=0.006, p<.05).
-# Kulttuuri vaikuttaa kasvojen kosketettavuuteen ylipäätään (beta=0.04, p<.01).
-# Tunneside vaikuttaa kasvojen kosketettavuuteen ylipäätään (beta=0.04, p<.001).
+# Koko aineisto
+robo_final %>%
+  identify_outliers(P300)
+# ei vierashavaintoja
 
-# Kuvio:
-library(ggplot2)
-ggplot(suvilehto , aes(x=bond, y=face, color=as.factor(country) )) + 
-  geom_point(size=1) +  
-  facet_wrap(~country) +
-  geom_smooth(method=lm , color="black", fill="#69b3a2", se=TRUE) +
-  theme(legend.position="none")
-# Kulttuurin ja tunnesiteen yhdysvaikutus ei vaikuta kuvion perusteella kovin voimakkaalta.
-# Aineisto on niin iso, että pienikin ero tulee helposti merkitseväksi.
-# Ei kovin kaunista. Ei ihme, että artikkelin kuvioissa käytettiin
-# keskiarvoista dataa :)
+# Koetilanteittan ja aivopuoliskoittain ryhmän mukaan:
+robo_final %>%
+  group_by(Group, Gaze, Hemisphere) %>%
+  identify_outliers(P300)
 
-# -
+# Ei vierashavaintoja.
 
-# Entä kädet?
+# Jäännöstermien normaalijakautuneisuus:
+library(performance)
+A1_onko_norm <- check_normality(A1)
+A1_onko_norm
+plot(A1_onko_norm)
+# Jäännöstermit ovat normaalijakautuneet.
 
-# Luodaan mallit:
-lm3 <- lm(hand~country+bond, data=suvilehto)
-lm4 <- lm(hand~country*bond, data=suvilehto)
+# Sfäärisyys:
+check_sphericity(A1)
 
-# Tarkastellaan niitä:
-summary(lm3)
-summary(lm4)
+# ---
 
-# Valitaan parempi malli:
-anova(lm3,lm4)
+# 5. Tilastollisen testin tulosten tarkastelu ja raportointi
 
-# Malli 4 sopii aineistoon paremmin, joten raportoidaan tulokset sen osalta:
-# Kulttuurin ja tunnesiteen pää- ja yhdysvaikutukset sisältävä malli sopii 
-# aineistoon ja mutta selittää vain 4.8% käsien kosketettavuuden vaihtelusta 
-# (F2, 7375)=124.3, p<.001, muokattu R^2=.048).
-# Kulttuuri vaikuttaa siihen, miten tunneside ennustaa käsien kosketettavuutta (beta=-0.023, p<.001).
-# Kulttuuri vaikuttaa käsien kosketettavuuteen ylipäätään (beta=0.14, p<.001).
-# Tunneside vaikuttaa käsien kosketettavuuteen ylipäätään (beta=0.04, p<.001).
+# P300-vaste:
+summary(A1)
+library(effectsize)
+effectsize::eta_squared(A1)
+# Ryhmän päävaikutus, F(1,63)=9.20, p=.0035, eta2=0.13
+# Ryhmän ja katseen suunnan yhdysvaikutus, F(1,63)=8.63, p=.0046, eta2=0.12
+# Ryhmän ja hemisfäärin yhdysvaikutus, F(1,63)=7.53, p=.0079, eta2=0.11
 
-# Kuvio:
-library(ggplot2)
-ggplot(suvilehto , aes(x=bond, y=hand, color=as.factor(country) )) + 
-  geom_point(size=1) +  
-  facet_wrap(~country) +
-  geom_smooth(method=lm , color="black", fill="#69b3a2", se=TRUE) +
-  theme(legend.position="none")
-# Japanissa tunnesiteen vaikutus on voimakkaampi.
+# Näytetään ryhmän ja katseen suunnan yhdysvaikutus interaktiokuviona:
+interaction.plot(Group, Gaze, P300,
+                 type="b", col=c(1:6),
+                 leg.bty="o",leg.bg="beige",
+                 lwd=2, pch=c(18,18),
+                 xlab="Ryhmä",
+                 ylab="P300",
+                 main="Ryhmän ja katseen suunnan vaikutus")
 
-# -
-
-# Entä jalat:
-
-# Luodaan mallit:
-lm5 <- lm(leg~country+bond, data=suvilehto)
-lm6 <- lm(leg~country*bond, data=suvilehto)
-
-# Tarkastelu:
-summary(lm5)
-summary(lm6)
-
-# Valitaan parempi malli:
-anova(lm5,lm6)
-# Malli 6 ei ole merkitsevästi parempi, joten malli 5
-# sopii aineistoon paremmin yksinkertaisuusperiaatteen
-# mukaan.
-# Kulttuurin ja tunnesiteen yhdysvaikutus ei ollut merkitsevä.
-# Kulttuurin päävaikutukset sisältävä malli sopii aineistoon 
-# ja selittää 11.8% jalkojen kosketettavuuden vaihtelusta 
-# (F2, 7376)=496, p<.001, muokattu R^2=.118).
-# Kulttuuri vaikuttaa jalkojen kosketettavuuteen ylipäätään (beta=-0.03, p<.001).
-# Tunneside vaikuttaa jalkojen kosketettavuuteen ylipäätään (beta=0.03, p<.001).
-
-# Kuvio:
-library(ggplot2)
-ggplot(suvilehto , aes(x=bond, y=leg, color=as.factor(country) )) + 
-  geom_point(size=1) +  
-  facet_wrap(~country) +
-  geom_smooth(method=lm , color="black", fill="#69b3a2", se=TRUE) +
-  theme(legend.position="none")
-
-# -
-
-# Tulosten tarkastelu:
-
-# Aineisto ei täytä useampia lineaarisen regression oletuksia.
-# Aineisto ei ole normaalijakautunut: suurin osa osallistujista ei halunnut kenenkään koskettavan
-# kasvoja, käsiä ja jalkoja.
-# Otoskoko on suuri, joten lineaarisessa regressioanalyysissa pienetkin erot tulevat merkitseviksi.
-# Tämä näkyy myös mallien melko pieninä varianssin selitysasteina, mutta selitysasteet eivät ole
-# kovin luotettavia, koska regressioanalyysin oletukset eivät täyty. 
-# Lisäksi riippumattomuusoletus ei täyty, joten analyysi tulisi toistaa esimerkiksi lineaarisia
-# sekamalleja käyttäen. Tämä samalla pienentäisi otoskokoa, mikä vaikuttaisi erityisesti siihen, että
-# pienet yhteydet eivät tulisi niin merkitseviksi.
-# Tuloskuvien perusteella selkein kulttuuriero näkyi käsien kosketettavuuden ja tunnesiteen yhteydessä.
-# Tuloksia ei ylipäätään voida pitää kovin luotettavina ja niitä olisi syytä vertailla aiempaan kirjallisuuteen
-# tai toistaa uudella otoksella ja eri analyysimenetelmin, jotta pitäviä johtopäätöksiä voidaan tehdä.
-# Tutkimus on eksploratiivinen, ja sen suurin hyöty on ilmiön kuvaaminen, joka mahdollista jatkotutkimusten
-# suunnittelun.
+# Näytetään ryhmän ja hemisfäärin yhdysvaikutus interaktiokuviona:
+interaction.plot(Group, Hemisphere, P300,
+                 type="b", col=c(1:6),
+                 leg.bty="o",leg.bg="beige",
+                 lwd=2, pch=c(18,18),
+                 xlab="Hemisfääri",
+                 ylab="P300",
+                 main="Ryhmän ja hemisfäärin vaikutus")
