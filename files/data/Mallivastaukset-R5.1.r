@@ -1,229 +1,269 @@
-# Harjoitusmoniste R5.1 
-# Logistinen regressio
-# Heini Saarimäki 27.9.2023
+# PSY.204 syksy 2024
+# Mallivastaukset
+# Harjoitusmoniste R5.1
+# Heini Saarimäki
 
-# -----
+# ---
 
-# 1. Aineiston lataaminen ja valmistelu
+# Aseta työskentelykansio
+setwd('C:/Users/sbhesa/OneDrive - TUNI.fi/Opetus/2024-2025/PSY.204 syksy 2024/Harjoitukset/')
+
+# Lataa tarvittavat kirjastot
+library(openxlsx)
+library(dplyr)
+
+# ---
+
+# 1. Aineiston valmistelu
 
 # Ladataan aineisto
-titanic <- read.csv('https://bit.ly/PSY204_titanic', header=T, sep=";", na.strings=c(""))
+tunteet <- read.xlsx('tunteet.xlsx')
 
-# Tarkistetaan faktoreiden koodaus:
-summary(titanic)
+# Tarkista aineisto
+summary(tunteet)
 
-# Vaihtoehtoinen tapa:
-is.factor(titanic$Survived)
-is.factor(titanic$Sex)
-is.factor(titanic$Pclass)
-is.factor(titanic$Cabin)
-is.factor(titanic$Embarked)
+# Kategoriset muuttujat faktoreiksi
+tunteet$ID <- factor(tunteet$ID)
+tunteet$Age.group <- factor(tunteet$Age.group)
 
-# Muutetaan kategoriset muuttujat faktoreiksi:
-titanic$Survived <- factor(titanic$Survived)
-titanic$Sex <- factor(titanic$Sex)
-titanic$Pclass <- factor(titanic$Pclass)
-titanic$Cabin <- factor(titanic$Cabin)
-titanic$Embarked <- factor(titanic$Embarked)
+# Puuttuvat arvot koodattu valmiiksi NA:lla
+# Puuttuvia arvoja on paljon
 
-# Tarkastellaan tietokehystä uudestaan:
-summary(titanic)
+# Poistetaan ICU-kyselyä vastaavat sarakkeet:
+library(dplyr)
+tunteet <- tunteet %>%
+  select(-starts_with("ICU"))
 
-# Tarkistetaan kategoristen muuttujien dummy-koodaus:
-contrasts(titanic$Sex) 
-contrasts(titanic$Embarked)
-contrasts(titanic$Pclass)
+# Käännetään käänteiset väittämät:
 
-# Puuttuvien havaintojen tarkastaminen:
-summary(titanic)
+# PNDL: väittämät PNDL2, PNDL5, PNDL7, PNDL9
+tunteet$PNDL2.k <- 5-tunteet$PNDL2
+tunteet$PNDL5.k <- 5-tunteet$PNDL5
+tunteet$PNDL7.k <- 5-tunteet$PNDL7
+tunteet$PNDL9.k <- 5-tunteet$PNDL9
 
-# Ikä puuttuu monilta
-library(Amelia)
-dev.new()
-missmap(titanic, main="Puuttuvat vs havaitut arvot")
+# EmQue: ei käännettäviä väittämiä
 
-# Hytti puuttuu monilta, poistetaan koko sarake:
-titanic$Cabin <- NULL
+# EAQ: väittämät EAQ1 EAQ2 EAQ3 EAQ4 EAQ7 EAQ8 EAQ9 EAQ10 EAQ11 
+# EAQ13 EAQ15 EAQ19 EAQ20 EAQ21 EAQ22 EAQ24 EAQ25 EAQ26 EAQ29 EAQ30
+# Luodaan lista käännettävistä muuttujista:
+EAQ_käännetään <- c("EAQ01", "EAQ02", "EAQ03", "EAQ04", "EAQ07", "EAQ08", "EAQ09", "EAQ10", "EAQ11", "EAQ13", "EAQ15", "EAQ19", "EAQ20", "EAQ21", "EAQ22", "EAQ24", "EAQ25", "EAQ26", "EAQ29", "EAQ30")
+# Luodaan kaikille näille uusi käännetty muuttuja
+tunteet <- tunteet %>%
+  mutate(across(all_of(EAQ_käännetään), ~ 4 - ., .names = "{.col}.k"))
 
-# Korvataan puuttuvat iän arvot keskiarvolla:
-titanic$Age[is.na(titanic$Age)] <- mean(titanic$Age,na.rm=T)
 
-# Poistetaan puuttuvat lähtösataman arvot:
-titanic <- titanic[complete.cases(titanic$Embarked), ]
+# ---
 
-# -----
+# 2. Puuttuvat tiedot
 
-# 2. Kuvailevat tulokset
+# Koko aineistossa:
+sum(complete.cases(tunteet))
+# Koko aineisto on 50 osallistujalta.
 
-# Tallennetaan keski- ja hajontaluvut jatkuville muuttujille:
+# PNDL-mittari:
+
+summary(tunteet)
+# Puuttuvia tietoja on 4-5 osallistujalta.
+# Tutkitaan, missä puuttuvat tiedot ovat:
+tunteet %>%
+  filter(if_any(5:14, is.na)) %>%
+  select(ID)
+# Puuttuvat osallistujat:
+# TUN003: kaikki
+# TUN067: PNDL6
+# TUN068: PNDL3
+# TUN101: kaikki
+# TUN102: kaikki
+# TUN103: kaikki
+
+# Poistetaan TUN003, TUN101, TUN102, TUN103:
+tunteet <- tunteet[-c(2, 75, 76, 77),]
+
+# Korvataan PNDL-kyselyn puuttuvat arvot osallistujan vastausten keskiarvolla - huom. käänteiset väittämät
+tunteet[which(tunteet$ID=="TUN067"), "PNDL6"] <- mean(as.numeric(tunteet[which(tunteet$ID=="TUN067"), c("PNDL1", "PNDL2.k", "PNDL3", "PNDL4", "PNDL5.k",
+                                                                                             "PNDL7.k", "PNDL8", "PNDL9.k", "PNDL10")]))
+tunteet[which(tunteet$ID=="TUN068"), "PNDL3"] <- mean(as.numeric(tunteet[which(tunteet$ID=="TUN068"), c("PNDL1", "PNDL2.k", "PNDL4", "PNDL5.k",
+                                                                                                        "PNDL6", "PNDL7.k", "PNDL8", "PNDL9.k", "PNDL10")]))
+# -
+
+# EmQue-mittari:
+summary(tunteet)
+# Puuttuvia tietoja on 6-7 osallistujalta.
+
+# Tutkitaan, missä puuttuvat tiedot ovat:
+tunteet %>%
+  filter(if_any(15:32, is.na)) %>%
+  select(ID)
+
+# Puuttuvat tiedot:
+# TUN005
+# TUN006
+# TUN018
+# TUN067
+# TUN068
+# TUN083
+# TUN095
+# TUN111
+
+# --
+
+# EAQ-mittari:
+summary(tunteet)
+
+# Yksittäiset puuttuvat vastaukset, etsitään ne ensin:
+# 19.k: rivi 90
+# 21k.: rivi 47
+# 22.k: rivi 27
+# 24.k: rivi 19, 22, 87
+yksittäiset_puuttuvat <- c("TUN028", "TUN031", "TUN036", "TUN061", "TUN116", "TUN120")
+kaikki_puuttuu <- tunteet %>%
+  filter(if_any(33:62, is.na)) %>%
+  filter(!ID %in% yksittäiset_puuttuvat) %>%
+  select(ID)
+
+# Tehdään katoanalyysi.
+
+# Puuttuvia tietoja on 29 osallistujalta. Poistetaan yllä olevat osallistujat listasta, muille
+# annetaan tieto puuttuvasta datasta.
+
+# Luo uusi muuttuja:
+tunteet$eaq_puuttuu <- 0
+tunteet$eaq_puuttuu[tunteet$ID %in% kaikki_puuttuu$ID] <- 1
+
+# Eroaako ikä:
+t.test(tunteet$Age ~ tunteet$eaq_puuttuu)
+# eroaa
+
+# Eroaako sukupuoli:
+chisq.test(tunteet$Gender, tunteet$eaq_puuttuu)
+# ei
+
+# Entä ikäryhmä:
+chisq.test(tunteet$Age.group, tunteet$eaq_puuttuu)
+plot(tunteet$Age.group, tunteet$eaq_puuttuu)
+
+# 3. Summamuuttujien luominen
+
+# Kiinnitä aineisto työskentelyn helpottamiseksi:
+attach(tunteet)
+
+# PNDL summamuuttujat
+tunteet$Social.loneliness <- rowSums(cbind(PNDL1, PNDL2.k, PNDL3, PNDL4, PNDL5.k))
+tunteet$Emotional.loneliness <- rowSums(cbind(PNDL6, PNDL7.k, PNDL8, PNDL9.k, PNDL10))
+tunteet$PNDL_total <- rowSums(tunteet[88:89])
+
+# EMQUE summamuuttujat
+tunteet$EPCON <- rowMeans(cbind(EMQUE01, EMQUE04, EMQUE07, EMQUE10, EMQUE13, EMQUE16), na.rm=T)
+tunteet$EPATT <- rowMeans(cbind(EMQUE03, EMQUE06, EMQUE09, EMQUE15, EMQUE18, EMQUE12), na.rm=T)
+tunteet$EPPRO <- rowMeans(cbind(EMQUE02, EMQUE05, EMQUE08, EMQUE11, EMQUE14, EMQUE17), na.rm=T)
+
+# EAQ summamuuttujat
+tunteet$ADIF <- rowMeans(cbind(EAQ01.k, EAQ07.k, EAQ13.k, EAQ19.k, EAQ24.k, EAQ29.k, EAQ30.k), na.rm=T)
+tunteet$ATALK <- rowMeans(cbind(EAQ02.k, EAQ08.k, EAQ14), na.rm=T)
+tunteet$AHIDE <- rowMeans(cbind(EAQ03.k, EAQ09.k, EAQ15.k, EAQ20.k, EAQ25.k), na.rm=T)
+tunteet$ABOD <- rowMeans(cbind(EAQ04.k, EAQ10.k, EAQ16, EAQ21.k, EAQ26.k), na.rm=T)
+tunteet$AOTH <- rowMeans(cbind(EAQ05, EAQ11.k, EAQ17, EAQ22.k, EAQ27), na.rm=T)
+tunteet$AOWN <- rowMeans(cbind(EAQ06, EAQ12, EAQ18, EAQ23, EAQ28), na.rm=T)
+
+# Kiinnitetään aineisto uudestaan
+attach(tunteet)
+
+# ---
+
+# 4. Cronbachin alfa
+
+# Voit käyttää Cronbachin alfaa joko kirjastosta 'ltm' tai kirjastosta 'psych:
+
+# Esim. Social loneliness:
+
+# Kirjastosta psych:
 library(psych)
-keskiluvut <- describe(titanic[4:7])
-keskiluvut
-write.csv(keskiluvut, 'titanic_keskiluvut.csv')
+alpha(cbind(PNDL1, PNDL2.k, PNDL3, PNDL4, PNDL5.k))
+# Tarkista arvo kohdasta 'raw_alpha': 0.76
 
-# Tallennetaan frekvenssit kategorisille muuttujille:
-frekvenssit <- summary(titanic[c(1:3, 8)])
-frekvenssit
-write.csv(frekvenssit, 'titanic_frekvenssit.csv')
+# Kirjastosta ltm:
+library(ltm)
+cronbach.alpha(cbind(PNDL1, PNDL2.k, PNDL3, PNDL4, PNDL5.k))
+# Tarkista arvo kohdasta 'raw_alpha'
+
+# Tarkista vastaavasti Cronbachin alfat kaikille summamuuttujille, tässä käytetään kirjastoa ltm:
+cronbach.alpha(cbind(PNDL6, PNDL7.k, PNDL8, PNDL9.k, PNDL10)) # emot. yksinäisyys: 0.63
+cronbach.alpha(cbind(EMQUE01, EMQUE04, EMQUE07, EMQUE10, EMQUE13, EMQUE16), na.rm=T) # EPCON: 0.70
+cronbach.alpha(cbind(EMQUE03, EMQUE06, EMQUE09, EMQUE15, EMQUE18, EMQUE12), na.rm=T) # EPATT: 0.83
+cronbach.alpha(cbind(EMQUE02, EMQUE05, EMQUE08, EMQUE11, EMQUE14, EMQUE17), na.rm=T) # EPPRO: 0.60
+cronbach.alpha(cbind(EAQ01.k, EAQ07.k, EAQ13.k, EAQ19.k, EAQ24.k, EAQ29.k, EAQ30.k), na.rm=T) # ADIF: 0.74
+cronbach.alpha(cbind(EAQ02.k, EAQ08.k, EAQ14), na.rm=T) # ATALK: 0.65
+cronbach.alpha(cbind(EAQ03.k, EAQ09.k, EAQ15.k, EAQ20.k, EAQ25.k), na.rm=T) # AHIDE: 0.79
+cronbach.alpha(cbind(EAQ04.k, EAQ10.k, EAQ16, EAQ21.k, EAQ26.k), na.rm=T) # ABOD: 0.81
+cronbach.alpha(cbind(EAQ05, EAQ11.k, EAQ17, EAQ22.k, EAQ27), na.rm=T) # AOTH: 0.73
+cronbach.alpha(cbind(EAQ06, EAQ12, EAQ18, EAQ23, EAQ28), na.rm=T) # AOWN: 0.79
+
+# ---
+
+# 5. Kategoristen muuttujien luominen:
+
+# Luodaan muuttuja Loneliness, ja annetaan sille luokka PNDL-total-muuttujan mediaaniin perustuen:
+tunteet$Loneliness <- 'high' 
+tunteet$Loneliness[which(tunteet$PNDL_total < median(tunteet$PNDL_total))] <- 'low'
+tunteet$Loneliness <- factor(tunteet$Loneliness)
+
+# Tarkista frekvenssit:
+summary(tunteet$Loneliness)
+# korkea yksinäisyys: 44, matala yksinäisyys: 42
+
+# Kiinnitä tietokehys:
+attach(tunteet)
 
 
-# -----
+# ---
 
-# 3. Mallin sovittaminen
+# 6.
 
-# Jaetaan aineisto opetus- ja testausaineistoon:
-opetus <- titanic[1:800,]
-testaus <- titanic[801:889,]
+# 6.1 Pearsonin khiin neliö -yhteensopivuustesti
 
-# Sovitetaan malli:
-malli <- glm(Survived ~ Pclass + Sex + Age + SibSp + ParCh + Fare + Embarked, family=binomial, data=opetus)
+# Tarkista ensin frekvenssit:
+summary(factor(tunteet$Age.group))
 
-# -----
+# Tallennetaan havaitut frekvenssit:
+observed_counts <- c("1" = 27, "2" = 26, "3" = 24, "4" = 13)  # Replace with your actual counts
 
-# 4. Oletusten tarkastelu
+# Tallennetaan odotetut frekvenssit:
+expected_counts <- c(22.5, 22.5, 22.5, 22.5)
 
-# Otoskoko on riittävä:
-nrow(opetus)
-
-# Multikollineaarisuus jatkuville muuttujille:
-corr.test(opetus[4:7])
-# Korrelaatioita on, mutta ne ovat melko pieniä (suurin r=.41)
-library(car)
-vif(malli)
-# Ei hälyttävää multikollinearisuutta
-
-# -----
-
-# 5. Mallin tulkinta
-
-# 5.1 Yksittäisten selittäjien merkitys
-summary(malli)
-
-lippu_ja_luokka <- aov(Fare ~ Pclass, data=opetus)
-summary(lippu_ja_luokka)
-boxplot(Fare ~ Pclass, data=opetus)
-
-# -
-
-# 5.2 Mallin sopivuus
-anova(malli, test="Chisq")
-
-nollamalli <- glm(Survived ~ 1, family="binomial", data=opetus)
-anova(nollamalli, malli, test="Chisq")
-
-# -
-
-# 5.3 Mallin selitysaste
-
-# Pseudo-R2:n estimointi:
-1-logLik(malli) / logLik(nollamalli)
-
-# Nagelkerken pseudo-R2:
-library(fmsb)
-NagelkerkeR2(malli)
+# Khiin neliö -testi:
+chisq.test(observed_counts, p = expected_counts / sum(expected_counts))
 
 # -
 
-# 5.4 Mallin ennustustarkkuus
+# 6.2 Khiin neliö -riippumattomuustesti
 
-ennusteet <- predict(malli,newdata=subset(testaus,select=c(2,3,4,5,6,7,8)),type='response')
-ennusteet <- ifelse(ennusteet > 0.5,1,0)
-
-luokitteluvirheet <- mean(ennusteet != testaus$Survived, na.rm=T)
-print(paste('Tarkkuus:',1-luokitteluvirheet))
-
-# -
-
-# 5.5 Mallin tarkkuus ja herkkyys
-
-# Piirretään ROC-käyrä:
-library(ROCR)
-pr <- prediction(ennusteet, testaus$Survived)
-prf <- performance(pr, measure = "tpr", x.measure = "fpr")
-plot(prf)
-
-# Lasketaan ROC-käyrän alapuolelle jäävä pinta-ala:
-auc <- performance(pr, measure = "auc")
-auc@y.values[[1]]
-
-# Arvo on lähellä yhtä, eli mallin ennustustarkkuus on hyvä.
+# Ikäryhmän ja sukupuolen yhteys
 
 # Ristiintaulukointi:
-testaus$Predicted <- factor(ennusteet)  
-ennustejakauma <-prop.table(table(testaus$Predicted,
-                                  testaus$Survived),2)*100
-round(ennustejakauma, 2)
+table(Age.group, Gender)
 
-#Kuvio:
-barplot(ennustejakauma, legend=TRUE, 
-        xlab="Todellinen luokka", ylab="Ennuste")
+# Ristiintaulukointi prosenteilla:
+round(prop.table(table(Age.group, Gender), margin=1)*100, 1)
 
-# -----
+# Khiin neliö-testi:
+chisq.test(Age.group, Gender)
+# Ikäryhmien välillä ei ole eroa sukupuolessa, X2(3)=4.89, p=.180
 
-# 6. Harjoituksia
-
-# Tehtävä 1:
-
-# Luodaan uusi malli:
-malli_uusi <- glm(Survived ~ Pclass + ParCh, family=binomial, data=opetus)
+# Yhden luokan frekvenssi oli 4, joten käytetään Fisherin tarkkaa testiä:
+fisher.test(Age.group, Gender)
+# p=.190
 
 # -
 
-# Tehtävä 2:
+# Sukupuolen ja yksinäisyyden yhteys
 
-# Otoskoko on riittävä:
-nrow(opetus)
+# Ristiintaulukointi
+table(Loneliness, Gender)
 
-# VIF-arvot saadaan myös kategorisille muuttujille:
-vif(malli_uusi)
+# Khiin neliö-testi:
+chisq.test(Loneliness, Gender)
+# Yksinäisyysryhmien välillä ei ole sukupuolieroja, X2(1)=0.167, p=.682
 
-# -
-
-# Tehtävä 3:
-
-# Yksittäiset ennustajat:
-summary(malli_uusi)
-# Molemmat muuttujat ennustavat selviytymistä.
-# Mitä alempi lippuluokka, sitä epätodennäköisempi selviytyminen.
-# Jos laivalla mukana vanhemmat tai lapset, sitä todennäköisempi selviytyminen
-
-# Mallin sopivuus:
-anova(malli_uusi, test="Chisq")
-
-# Nagelkerken pseudo-R2:
-NagelkerkeR2(malli)
-
-# Ennustustarkkuus:
-ennusteet_uusi <- predict(malli_uusi,newdata=subset(testaus,select=c(2,6)),type='response')
-ennusteet_uusi <- ifelse(ennusteet_uusi > 0.5,1,0)
-luokitteluvirheet_uusi <- mean(ennusteet_uusi != testaus$Survived, na.rm=T)
-print(paste('Tarkkuus:',1-luokitteluvirheet_uusi))
-
-# Piirretään ROC-käyrä:
-pr <- prediction(ennusteet_uusi, testaus$Survived)
-prf <- performance(pr, measure = "tpr", x.measure = "fpr")
-plot(prf)
-
-# Lasketaan ROC-käyrän alapuolelle jäävä pinta-ala:
-auc <- performance(pr, measure = "auc")
-auc <- auc@y.values[[1]]
-auc
-# Arvo on lähempänä 0.5 kuin yhtä, eli ennustustarkkuus ei ole kovin hyvä.
-
-# Ristiintaulukointi:
-testaus$Predicted_uusi <- factor(ennusteet_uusi)  
-ennustejakauma_uusi <-prop.table(table(testaus$Predicted_uusi,
-                                  testaus$Survived),2)*100
-round(ennustejakauma_uusi, 2)
-
-#Kuvio:
-barplot(ennustejakauma_uusi, legend=TRUE, 
-        xlab="Todellinen luokka", ylab="Ennuste")
-
-# Tehtävä 5:
-
-# Mallien vertailu
-library(AICcmodavg)
-aictab(cand.set = list(malli, malli_uusi), modnames = c("malli", "malli_uusi") )
-
-# Alkuperäinen malli sopii aineistoon paremmin.
+# Kuvio:
+plot(Loneliness, Gender, xlab="Loneliness", ylab="Gender")
