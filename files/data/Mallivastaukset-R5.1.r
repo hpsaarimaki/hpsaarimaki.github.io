@@ -130,6 +130,11 @@ kaikki_puuttuu <- tunteet %>%
   filter(!ID %in% yksittäiset_puuttuvat) %>%
   select(ID)
 
+# Vaihtoehtoinen tapa etsiä ID:t, joilta puuttuu kaikki vastaukset tietyissä sarakkeissa:
+kaikki_puuttuu <- tunteet %>%
+  filter(if_all(33:62, is.na)) %>%
+  select(ID)
+
 # Tehdään katoanalyysi.
 
 # Puuttuvia tietoja on 29 osallistujalta. Poistetaan yllä olevat osallistujat listasta, muille
