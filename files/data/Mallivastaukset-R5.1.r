@@ -106,6 +106,14 @@ tunteet %>%
 # TUN095
 # TUN111
 
+# Määritä rajaksi puuttuvien osuus yli 50%
+puuttuvien_osuus <- rowMeans(is.na(tunteet[15:32]))
+puuttuu_yli_50 <- tunteet[puuttuvien_osuus > 0.5, 'ID'] 
+puuttuu_yli_50
+
+# Yli 50% havainnoista puuttuu osallistujilta:
+# TUN005, TUN006, TUN18, TUN67, TUN083, TUN095
+
 # --
 
 # EAQ-mittari:
@@ -157,6 +165,10 @@ tunteet$PNDL_total <- rowSums(tunteet[88:89])
 tunteet$EPCON <- rowMeans(cbind(EMQUE01, EMQUE04, EMQUE07, EMQUE10, EMQUE13, EMQUE16), na.rm=T)
 tunteet$EPATT <- rowMeans(cbind(EMQUE03, EMQUE06, EMQUE09, EMQUE15, EMQUE18, EMQUE12), na.rm=T)
 tunteet$EPPRO <- rowMeans(cbind(EMQUE02, EMQUE05, EMQUE08, EMQUE11, EMQUE14, EMQUE17), na.rm=T)
+# Anna summamuuttujille arvo NA, jos puuttui yli 50% vastauksista:
+tunteet$EPCON[puuttuu_yli_50] <- NA
+tunteet$EPATT[puuttuu_yli_50] <- NA
+tunteet$EPPRO[puuttuu_yli_50] <- NA
 
 # EAQ summamuuttujat
 tunteet$ADIF <- rowMeans(cbind(EAQ01.k, EAQ07.k, EAQ13.k, EAQ19.k, EAQ24.k, EAQ29.k, EAQ30.k), na.rm=T)
