@@ -1,194 +1,87 @@
-# PSY204 syksy 2023
-# Harjoitusmoniste 6.1: Faktorianalyysi
+# PSY.204 syksy 2024
 # Mallivastaukset
-# Heini Saarimäki 4.10.2023
-# 
-# ----
+# Harjoitusmoniste R6.1
+# Heini Saarimäki
 
-# Ladataan tarvittavat kirjastot
-library(psych)
-library(GPArotation)
-library(GGally)
+# ---
 
-# Asetetaan työskentelykansio
-setwd("C:/Users/sbhesa/Documents/Opetus/")
+# Aseta työskentelykansio
+setwd('C:/Users/sbhesa/OneDrive - TUNI.fi/Opetus/2024-2025/PSY.204 syksy 2024/Harjoitukset/')
 
-# ----
+# ---
 
 # 1. Aineiston valmistelu
 
-# Ladataan aineisto:
+# Aja viime viikon skripti
+source('Mallivastaukset R5.1 Aineiston käsittely ja kategoriset muuttujat.r')
 
-tas <- read.csv("2022-2023/PSY204 - syksy 2022/Materiaalit/briganti-tas-data.csv", sep=";")
-
-# Tarkistetaan puuttuvat havainnot:
-describe(tas)
-anyNA(tas) 
-
-# ei puuttuvia havaintoja, N = 1925
-
-# Tarkastellaan muuttujien jakaumia:
-par(mfrow=c(1,5))
-hist(tas$TAS1)
-hist(tas$TAS2)
-hist(tas$TAS3)
-hist(tas$TAS4)
-hist(tas$TAS5)
-
-# Tarkastellaan korrelaatiomatriisia visuaalisesti:
-ggcorr(tas) # funktio sisältyy kirjastoon GGally
-
-# -
-
-# Aineiston faktoroitumisen arviointi:
-
-# Kaksi keinoa:
-
-# 1) Bartlettin sfäärisyystesti
-
-cortest.bartlett(tas)
-
-# Merkitsevä tulos (p<.05), eli ainakin jotkin muuttujat korreloivat keskenään.
-
-# 2) KMO
-
-KMO(tas)
-
-# Kokonais-MSA = 0.84, voidaan jatkaa faktorianalyysiin.
+# Kiinnitä aineisto
+attach(tunteet)
 
 # ---
 
-# 2. Faktorimallin suunnittelu
+# 2. Aineiston tarkastelu
 
-# Faktorien määrän valinta
+# Tarkista jakaumat:
+par(mfrow=c(2,3))
+hist(Social.loneliness, main="")
+hist(Emotional.loneliness, main="")
+hist(PNDL_total, main="")
+hist(EPCON, main="")
+hist(EPATT, main="")
+hist(EPPRO, main="")
 
-# Kaksi menetelmää:
+# Shapiro-Wilk-testit:
+shapiro.test(Social.loneliness)
+shapiro.test(Emotional.loneliness)
+shapiro.test(PNDL_total)
+shapiro.test(EPCON)
+shapiro.test(EPATT)
+shapiro.test(EPPRO)
+# Mikään summamuuttujista ei ole normaalijakautunut.
 
-# 1) Scree-kuvio
+# Sirontakuvio sosiaaliselle ja emotionaaliselle yksinäisyydelle:
+plot(Social.loneliness, Emotional.loneliness)
 
-scree(tas)
+# Sirontamatriisi kaikille summamuuttujille:
+plot(tunteet[88:93])
 
-# arviolta 2-3 faktoria
-
-# 2) Parallel analysis
-
-fa.parallel(tas)
-
-# arviolta 4 faktoria, joten aloitetaan siitä
-
-# ---
-
-# 3. Faktorianalyysin toteutus
-
-# Kokeillaan neljän faktorin ratkaisua:
-
-fa4 <- fa(tas,
-          nfactor=4,
-          fm="pa",
-          max.iter=100,
-          rotate="oblimin")
-
-fa.diagram(fa4)
-fa4
-
-# Jatketaan neljän faktorin mallin tarkasteluilla.
+# Tuunatumpi sirontamatriisi:
+library(GGally)
+ggpairs(tunteet[88:93]) 
 
 # ---
 
-# 4. Mallin tulkinta
+# 3. Korrelaatiot
 
-# Yleistulokset mallista:
+# Sosiaalisen ja emotionaalisen yksinäisyyden välinen korrelaatio:
+library(psych)
+cor.test(Social.loneliness, Emotional.loneliness, method="spearman")
+# r=.307, p=.004
+# Selitysaste:
+0.307*0.307
+# 0.09, eli emotionaalinen yksinäisyys selittää 9% sosiaalisen yksinäisyyden vaihtelusta
 
-fa4
+# Kaikkien summamuuttujien välinen korrelaatiomatriisi:
+corr.test(tunteet[88:93], method="spearman")
 
-# Faktoriratkaisun sopivuus:
-# khii2(116)=589.6, p<.0001
-# TLI = 0.891 --> alle 0.9 olisi ok, eli ei hyvä
-# RMSEA = 0.046 --> alle 0.05 on ok
+# Mitkä korrelaatiot ovat merkitseviä?
+# Sosiaalinen ja emotionaalinen yksinäisyys, r=.31, p=.04
+# Sosiaalinen yksinäisyys ja PNDL total, r=.82. p=.00
+# Emotionaalinen yksinäisyys ja PNDL total, r=.76, p=.00
+# EPCON ja EPATT, r=.45, p=.00
+# EPPRO ja EPATT, r=.32, p=.04
 
-# Lataukset kullekin faktorille:
-library(plot.matrix)
-plot(loadings(fa4), cex=0.5, axis.row = list(side=2, las=1))
-# Kaikki muuttujat latautuvat vähintään .3 jollekin faktorille,
-# mutta osalla muuttujista lataukset pieniä (alle .4).
+# Lisää dikotominen sukupuoli korrelaatiomatriisiin:
+tunteet$Gender <- factor(tunteet$Gender)
+tunteet$Female <- 0
+tunteet$Female[which(tunteet$Gender == "F")] <- 1
 
-# Muuttujien kommunaliteetit erikseen:
-fa4$communality
-# Alle .3 kommunaliteetit:
-# TAS3, TAS5, TAS 6, TAS8, TAS10, TAS13, TAS10,
-# TAS11, TAS14, TAS16, TAS18, TAS19, TAS20
+# Korrelaatiomatriisi, jossa mukana sukupuoli:
+corr.test(tunteet[c(88:93,101)])
 
-# Faktorien selitysosuus:
-# Yksittäisten faktorien selitysosuus 4-12%
-# Kokonaisselitysosuus 31%
-
-# Faktoreiden väliset korrelaatiot
-# kohtalainen (r=0.51) vain faktoreille 1 ja 3
-# vinorotaatio perusteltu
-
-# Faktoreiden nimeäminen
-# PA1: vaikeus kuvailla tunteita
-# PA2: taipumus ongelmanratkaisuun
-# PA3: vaikeus tunnistaa tunteita tai niiden syitä 
-# PA4: haluttomuus jakaa tunteita
-
-# Yhteenvetona:
-# Lataukset ja kommunaliteetit osalle muuttujista pieniä.
-# Kokeillaan kolmen faktorin ratkaisua.
-
-# ---
-
-# 5. Faktorianalyysin muokkaus: kolmen faktorin ratkaisu
-
-# Ajetaan kolmen faktorin malli:
-fa3 <- fa(tas,
-          nfactor=3,
-          fm="pa",
-          max.iter=100,
-          rotate="oblimin")
-
-# Visuaalinen tarkastelu:
-fa.diagram(fa3)
-
-# ---
-
-# 6. Mallin tulkinta: kolmen faktorin ratkaisu
-
-# Yleistulokset mallista:
-
-fa3
-
-# Faktoriratkaisun sopivuus:
-# khii2(133)=969.08, p<.0001
-# TLI = 0.83 eli ei kovin hyvä
-# RMSEA = 0.057 eli kohtalainen
-
-# Lataukset kullekin faktorille:
-library(plot.matrix)
-plot(loadings(fa3), cex=0.5, axis.row = list(side=2, las=1))
-# Kaikki muuttujat latautuvat vähintään .3 jollekin faktorille,
-# lataukset parempia kuin neljän faktorin mallissa.
-
-# Muuttujien kommunaliteetit erikseen:
-fa3$communality
-# Alle .3 kommunaliteetit:
-# TAS3, TAS5, TAS 6, TAS7, TAS8, TAS10, 
-# TAS11, TAS12, TAS14, TAS15, TAS16, TAS18, TAS19, TAS20
-
-# Faktorien selitysosuus:
-# Yksittäisten faktorien selitysosuus 6-12%
-# Kokonaisselitysosuus 28%
-
-# Faktoreiden väliset korrelaatiot
-# kohtalainen (r=0.56) vain faktoreille 1 ja 3
-# vinorotaatio perusteltu
-
-# Faktoreiden nimeäminen
-# PA1: vaikeus puhua tunteista
-# PA2: vaikeus tunnistaa tunteita
-# PA3: taipumus ulkoisesti suuntautuneeseen ajatteluun
-
-
-# ---
+# Osittaiset korrelaatiot:
+library(ppcor)
+pcor.test(x = Social.loneliness, y = EPPRO, z = Emotional.loneliness)
 
 
