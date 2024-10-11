@@ -1,212 +1,176 @@
-# PSY204 syksy 2023
-# Harjoitukset 7.1: Faktoreiden jatkokäyttö ja konfirmatorinen faktorianalyysi
+# PSY.204 syksy 2024
 # Mallivastaukset
-# Heini Saarimäki 11.10.2023
-# 
-# ----
-
-# Ladataan tarvittavat kirjastot
-library(lavaan)
-
-# Asetetaan työskentelykansio
-setwd("C:/Users/sbhesa/Documents/Opetus/")
+# Harjoitusmoniste R7.1
+# Heini Saarimäki
 
 # ---
 
-# Ladataan tarvittavat kirjastot
-library(psych)
-library(GPArotation)
-
-# Asetetaan työskentelykansio
-setwd("C:/Users/sbhesa/Documents/Opetus/")
+# Aseta työskentelykansio
+setwd('C:/Users/sbhesa/OneDrive - TUNI.fi/Opetus/2024-2025/PSY.204 syksy 2024/Harjoitukset/')
 
 # ---
 
 # 1. Aineiston valmistelu
 
-# Ladataan aineisto:
+# Aja viime viikon skripti
+source('Mallivastaukset R5.1 Aineiston käsittely ja kategoriset muuttujat.r')
 
-tas <- read.csv("https://hpsaarimaki.github.io/files/data/briganti-tas-data-2.csv", sep=";")
+# Tallenna vain analyysia varten tarvittavat muuttujat:
+tunteet_valmis <- tunteet[c(1:4,88:100)]
 
-# Tarkastellaan aineistoa:
-summary(tas)
-
-# Tarkistetaan puuttuvat havainnot:
-describe(tas)
-anyNA(tas) 
-
-# Kiinnitetään tietokehys
-attach(tas)
+# Kiinnitä aineisto
+attach(tunteet_valmis)
 
 # ---
 
-# 2. Eksploratiivinen faktorianalyysi
+# 2 Kuvailevat tulokset
 
-# Tallennetaan viime viikolta tuttu kolmen faktorin malli.
-# Huom. valitse vain tas-muuttujat!
-# Ajetaan kolmen faktorin malli:
-fa3 <- fa(tas[1:20],
-          nfactor=3,
-          fm="pa",
-          max.iter=100,
-          rotate="oblimin")
+# Tarkastellaan tunnuslukuja:
+library(psych)
+describe(tunteet_valmis[5:16])
+# Huomioi taulukosta myös puuttuvan aineiston määrä per summamuuttuja.
 
-# Visuaalinen tarkastelu:
-fa.diagram(fa3)
+# Sirontakuvio kaikkien summamuuttujien välillä:
+dev.new() # avaa kuvan erilliseen ikkunaan
+plot(tunteet_valmis[5:16]) 
 
-# Varmista, että kaikki lataukset positiivisia eli että
-# aineistossa ei ole käänteisiä muuttujia jäljellä!
+# Sirontakuvio valikoiduille muuttujille:
+plot(tunteet_valmis[8:16])
+
+# Korrelaatiomatriisi valikoiduille muuttujille:
+corr.test(tunteet_valmis[8:16])
+
+# -
+
+# Kysymys 1:
+# Empatian alaskaalojen ja tunteiden tunnistamisen alaskaalojen välillä on seuraavat
+# tilastollisesti merkitsevät korrelaatiot:
+# EPCON ja ABOD (r=-.51)
+# EPATT ja AOTH (r=.67)
+# EPATT ja AOWN (r=.52)
+# EPPRO ja AOTH (r=.44)
+
+# Huomioi pieni otoskoko, jolloin kaikki kohtalaisetkaan korrelaatiot eivät ole
+# monivertailukorjauksen jälkeen merkitseviä.
+
+# -
+
+# Kysymys 2:
+# Selittäviä muuttujia ovat tunteiden tunnistamisen alaskaalat. Niiden välillä on seuraavat
+# tilastollisesti merkitsevät korrelaatiot:
+# ADIF ja ABOD (r=.41)
+# ATALK ja AHIDE (r=.47)
+
+# -----
+
+# 3 Lineaarinen regressio
+
+# 3.1 Yhden selittävän muuttujan mallit:
+
+# Tallennetaan malli 1:
+
+malli_1 <- lm(EPCON ~ ADIF)
+
+# -
+
+# Kysymys 4:
+
+# Tarkastellaan oletuksia:
+plot(malli_1)
+# Lineaarisuusoletus täyttyy.
+# Residuaalien normaalisuusoletus täyttyy.
+# Residuaalien homoskedastistuus on ok.
+# Ei merkittäviä vierashavaintoja.
+# Huom. Otos pieni (N=57).
+
+# -
+
+# Kysymys 5:
+
+# Tarkastellaan mallia:
+summary(malli_1)
+# Tunteiden erittely ei ennusta tunteiden tarttumista (mallin sopivuus: F(1, 53)=2.34, p=.132).
+
+# -
+
+# Tallennetaan malli 2:
+malli_2 <- lm(EPCON ~ ABOD)
+
+# -
+
+# Kysymys 6:
+
+# Tarkastellaan oletuksia:
+plot(malli_2)
+# Lineaarisuusoletus täyttyy.
+# Residuaalien normaalisuusoletus ok.
+# Residuaalien homoskedastistuusoletus täyttyy.
+# Ei merkittäviä vierashavaintoja.
+# Huom. Otos pieni (N=57).
+
+# - 
+
+# Kysymys 7:
+
+# Tarkastellaan mallia:
+summary(malli_2)
+# Tunteiden kehollinen tunnistaminen selittää tunteiden tarttumista (R^2 = 0.26, F(1, 53)=18.2, p<.001).
+# Tunteiden kehollinen tunnistaminen selittää siis 26% tunteiden tarttumisen vaihtelusta.
+# Kun tunteiden kehollinen tunnistaminen kasvaa yhden pisteen, tunteiden tarttuminen laskee 0.31 pistettä.
+
+# -
+
+# Kysymys 8:
+
+# Julkaisukelpoinen kuva esim:
+ggplot(tunteet_valmis, aes(x=EPCON, y=ABOD)) +
+  geom_point() +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) 
 
 # ---
 
-# 3. Yhdistelmämuuttujat
+# 3.2 Kahden selittävän muuttujan malli:
 
-# 3.1 Summamuuttujat
-
-# Kokonaispistemäärä
-tas$TOTAL <- rowSums(tas[1:20])
-
-# Summamuuttujat
-tas$DIF <- rowSums(tas[c(1, 3, 6, 7, 9, 13, 14)])
-tas$DDF <- rowSums(tas[c(2, 4, 11, 12, 17)])
-tas$EOT <- rowSums(tas[c(5, 8, 10, 15, 16, 18, 19, 20)])
+# Tallennetaan malli 3:
+malli_3 <- lm(EPCON ~ ABOD + AOTH)
 
 # -
 
-# Kuvailevat tulokset summamuuttujille:
-describe(tas[27:30])
+# Kysymys 9:
 
-# Summamuuttujien jakaumat:
-par(mfrow=c(1,4))
-hist(tas$DIF)
-hist(tas$DDF)
-hist(tas$EOT)
-hist(tas$TOTAL)
+# # Tarkastellaan oletuksia:
+plot(malli_3)
+# Lineaarisuusoletus täyttyy.
+# Residuaalien normaalisuusoletus ok.
+# Residuaalien homoskedastisuusoletus täyttyy.
+# Ei merkittäviä vierashavaintoja.
+# Huom. Otos pieni (N=57).
 
-# -
-
-# Cronbachin alfat summamuuttujille:
-library(ltm)
-
-# Kokonaispistemäärä:
-cronbach.alpha(tas[1:20], CI=TRUE)
-
-# Summamuuttujat:
-cronbach.alpha((tas[c(1, 3, 6, 7, 9, 13, 14)]), CI=TRUE)
-cronbach.alpha(tas[c(2, 4, 11, 12, 17)], CI=TRUE)
-cronbach.alpha(tas[c(5, 8, 10, 15, 16, 18, 19, 20)], CI=TRUE)
+# Multikollineaarisuus:
+cor.test(ABOD,AOTH)
+library(car)
+vif(malli_3)
+# Tunteiden kehollinen tunnistainen ja tarkkaavuus muiden tunteille korreloivat jonkin verran (r=.-27, p=.04),
+# mutta korrelaatio ei ole kovin voimakasta.
+# VIF-arvot ok (arvot välillä 1-5 ok).
 
 # -
 
-# Faktoreiden jatkokäyttö:
+# Kysymys 10:
 
-# Selittävätkö DIF, DDF ja EOT muuttujan sim_A arvoja?
-
-malli1 <- lm(sim_A ~ DIF + DDF + EOT, data=tas)
-summary(malli1)
-
+# Tarkastellaan mallia:
+summary(malli_3)
+# Malli selittää 31% itsehillinnän vaihtelusta (muokattu R^2 = 0.31, F(2, 52)=13.2, p<.001)
+# Tunteiden tarttuminen laskee, kun tunteiden kehollinen tunnistaminen kasvaa (beta=-0.26).
+# Tunteiden tarttuminen kasvaa, kun tarkkaavuus toisten tunteille kasvaa (beta=0.25).
 
 # -
 
-# 3.2 Faktoripisteisiin perustuvat yhdistelmämuuttujat
+# Kysymys 11:
 
-# Oletusarvona funktiossa fa oli faktoripisteiden laskeminen regressiolla:
-tas <- cbind(tas, fa3$scores)
-
-# Faktoripistemuuttujien jakaumat:
-par(mfrow=c(1,3))
-hist(tas$PA1)
-hist(tas$PA2)
-hist(tas$PA3)
-
-# Voidaan laskea myös tenBerge, Anderson tai Bartlett muokkaamalla
-# faktorianalyysin ajamista, esim:
-
-fa3.tenBerge <- fa(tas[1:20],
-                   scores="tenBerge",
-                   nfactor=3,
-                   fm="pa",
-                   max.iter=100,
-                   rotate="oblimin")
-
-tas <- cbind(tas, fa3.tenBerge$scores)
-colnames(tas)[34] <- "PA1.tenBerge"
-colnames(tas)[35] <- "PA3.tenBerge"
-colnames(tas)[36] <- "PA2.tenBerge"
-
-# Faktoripistemuuttujien jakaumat:
-par(mfrow=c(1,3))
-hist(tas$PA1.tenBerge)
-hist(tas$PA2.tenBerge)
-hist(tas$PA3.tenBerge)
+# Mallien vertailu:
+anova(malli_2, malli_3)
+# Tarkkaavuus toisten tunteille parantaa mallia.
 
 # ---
-
-# 4. Konfirmatorinen faktorianalyysi
-
-## 4.1 Aineiston valmistelu
-
-# Ladataan aineisto:
-
-tas2 <- read.csv("https://hpsaarimaki.github.io/files/data/tas-scores.csv", sep=";")
-
-# Tarkastellaan aineistoa:
-summary(tas2)
-dim(tas2)
-
-# Muutetaan faktorit faktoreiksi:
-tas2$ID <- factor(tas2$ID)
-tas2$Sex <- factor(tas2$Sex)
-
-# Onko puuttuvia arvoja?
-which(is.na(tas2))
-
-# Aineistossa on joitakin puuttuvia arvoja. Poistetaan rivit.
-tas2 <- tas2[complete.cases(tas2), ]
-
-# Tarkastellaan tietokehystä:
-describe(tas2)
-dim(tas2)
-
-# -
-
-# 4.2 Aineiston tarkastelu
-
-# Tarkistetaan TAS-muuttujien korrelaatiomatriisi:
-library(GGally)
-ggcorr(tas2[3:22]) 
-
-# Käänteisiä muuttujia on. Tarkastellaan mitkä ne olivat ja käännetään ne.
-# Five of the items are reverse-scored: 4, 5, 10, 18, and 19.
-tas2$tas4 <- 6-tas2$tas4
-tas2$tas5 <- 6-tas2$tas5
-tas2$tas10 <- 6-tas2$tas10
-tas2$tas18 <- 6-tas2$tas18
-tas2$tas19 <- 6-tas2$tas19
-
-
-# Jakaumat
-par(mfrow=c(1,5))
-hist(tas2$tas1)
-hist(tas2$tas2)
-hist(tas2$tas3)
-hist(tas2$tas4)
-hist(tas2$tas5)
-
-# -
-
-# 4.3 Mallin rakentaminen
-
-polku <- '
-  dif = ~ tas1 + tas3 + tas6 + tas7 + tas9 + tas13 + tas14
-  ddf = ~ tas2 + tas4 + tas11 + tas12 + tas17
-  eot = ~ tas5 + tas8 + tas10 + tas15 + tas16 + tas18 + tas19 + tas20'
-
-# -
-
-# 4.4 Mallin sovittaminen ja tulosten tarkastelu
-
-cfa.malli <- cfa(polku, data = tas2[3:22])
-summary(cfa.malli, fit.measures = TRUE)
-
 
