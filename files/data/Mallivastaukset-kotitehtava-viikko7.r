@@ -1,202 +1,114 @@
-# PSY204 syksy 2023
-# Kotitehtävä viikko 7: Faktorianalyysi
-# Mallivastaukset
-# Heini Saarimäki 8.10.2023
-# 
-# ----
-
-# Asetetaan työskentelykansio
-setwd("C:/Users/sbhesa/Documents/Opetus/")
+# Kotitehtävät
+# Viikko 7
 
 # ---
 
-# 1. Aineiston valmistelu
+# Aseta työskentelykansio
+setwd('C:/Users/sbhesa/OneDrive - TUNI.fi/Opetus/2024-2025/PSY.204 syksy 2024/Kotitehtävät/')
+
+# ---
+
+# Aineiston valmistelu
 
 # Ladataan aineisto:
 
-dubois <- read.csv("https://hpsaarimaki.github.io/files/data/hcp_clean.csv", sep=";")
+greenspace <- read.csv('GREENSPACE.csv', sep=";")
+greenspace$X <- NULL
 
-# Tarkistetaan puuttuvat havainnot:
+# Tarkastellaan aineistoa:
+summary(greenspace)
+
+# Faktorit faktoreiksi:
+greenspace$ID <- factor(greenspace$ID)
+greenspace$Country <- factor(greenspace$Country)
+greenspace$Gender <- factor(greenspace$Gender)
+
+# Havaitaan, että joissakin muuttujissa on negatiivisia arvoja (-99).
+# Nämä ovat todennäköisesti yritys koodata puuttuvia arvoja.
+# Uudelleenkoodataan negatiiviset arvot NA:ksi.
+greenspace[greenspace == -99] <- NA
+
+# Poikkeavat havainnot:
+# Luontomuuttujat:
+boxplot(greenspace[5:7])
+# CHAOS-muuttujat:
+boxplot(greenspace[8:21])
+# PCNB-muuttujat:
+boxplot(greenspace[22:30])
+# Wellbeing-muuttujat:
+boxplot(greenspace[31:34])
+
+# Ei tässä vaiheessa huolestuttavan poikkeavia havaintoja.
+
+# Puuttuvien havaintojen määrä:
 library(psych)
-describe(dubois)
-anyNA(dubois) 
+describe(greenspace)
 
-# ei puuttuvia havaintoja, N = 879
+# Huomataan, että joiltakin osallistujilta puuttuu osa muuttujista.
+# Tallennetaan uuteen tietokehykseen vain osallistujat, joilta on koko aineisto (N=535):
 
-# Muutetaan faktorit faktoreiksi:
-dubois$Subject <- factor(dubois$Subject)
-dubois$Gender <- factor(dubois$Gender)
-
-# Kiinnitetään tietokehys:
-attach(dubois)
-
-# -
-
-# 2. Aineiston tarkastelu
-
-# Tallennetaan tehtämuuttujien keski- ja hajontaluvut:
-keskiluvut <- describe(dubois[4:13])
-write.csv(keskiluvut, 'dubois_keskiluvut.csv')
-
-# Tarkastellaan muuttujien jakaumia:
-par(mfrow=c(2,5))
-hist(dubois$CardSort_Unadj, main="CardSort")
-hist(dubois$Flanker_Unadj, main="Flanker")
-hist(dubois$ListSort_Unadj, main="ListSort")
-hist(dubois$PicSeq_Unadj, main="PicSeq")
-hist(dubois$PicVocab_Unadj, main="PicVocab")
-hist(dubois$ProcSpeed_Unadj, main="ProcSpeed")
-hist(dubois$ReadEng_Unadj, main="ReadEng")
-hist(dubois$IWRD_TOT, main="IWRD")
-hist(dubois$PMAT24_A_CR, main="PMAT")
-hist(dubois$VSPLOT_TC, main="VSPLOT")
-
-# Tarkastellaan korrelaatiomatriisia visuaalisesti:
-library(ggplot2)
-library(GGally)
-ggcorr(dubois[4:13])
-# Kuvion voi tallentaa käsin esim. kuvavalikosta Export --> Save as image
-
-# Vaihtoehtoisesti voidaan tallentaa korrelaatiomatriisi taulukkona:
-korrelaatiot <- corr.test(dubois[4:13]) # tallennetaan ensin korrelaatiomatriisi
-write.csv(korrelaatiot$r, 'dubois_korrelaatiot_r.csv') # tallennetaan korrelaatiokertoimet tiedostoksi
-write.csv(korrelaatiot$p, 'dubois_korrelaatiot_p.csv') # tallennetaan p-arvot tiedostoksi
-
-# Korrelaatioiden vaihteluväli:
-range(korrelaatiot$r)
-
-# Aineiston faktoroitumisen arviointi:
-
-# Otetaan MSA-arvot ja tallennetaan ne olioon nimeltä 'msa':
-msa <- KMO(dubois[4:13])
-msa
-
-# MSA-arvot löytyvät oliosta kohdasta MSAi, joten poimitaan ne ja tallennetaan taulukkoon:
-write.csv(msa$MSAi, 'msa.csv')
-
-# -
-
-# 3. Faktorimallin suunnittelu ja toteutus
-
-# Faktorien määrän valinta
-# 1) Scree-kuvio
-scree(dubois[4:13])
-# 2) Parallel analysis
-fa.parallel(dubois[4:13])
-# Kummankin perusteella 4 näyttää toimivalta
-
-# Ekstraktointimenetelmäksi ML
-# Rotatointimenetelmäksi vinokulmarotaatio
-# Perustelut: niitä käytettiin alkuperäisessä 
-# artikkelissa ja haluan toistaa analyysit.
-
-fa4 <- fa(dubois[4:13],
-          nfactor=4,
-          fm="ml",
-          max.iter=100,
-          rotate="oblimin"
-          )
-
-fa.diagram(fa4)
-# IWRD_TOT ei lataa millekään faktorille yli .3 latauksilla,
-# harkitsen poistamista. Katson kuitenkin
-# tarkemmat tulokset ensin tälle mallille.
+greenspace <- greenspace[complete.cases(greenspace),]
+describe(greenspace)
+attach(greenspace)
 
 # ---
 
-# 4. Mallin tulkinta
+# 2. Taustamuuttujien tarkastelu
 
-# Yleistulokset:
-fa4
-# Faktorit korreloivat keskenään, eli 
-# vinokulmarotaatio oli hyvä valinta.
+# Tarkista iän keskiarvot asuinmaan suhteen:
+tapply(Age, Country, mean)
+tapply(Age, Country, sd)
+tapply(Age, Country, range)
 
-# 1) Faktoriratkaisun sopivuus:
-# Khiin neliötesti: khii2(11) = 14.77, p<.19 eli ei-merkitsevä. Malli sopii hyvin.
-# TLI = 0.991 eli malli sopii hyvin.
-# RMSEA = 0.02 eli malli sopii hyvin.
+# Onko eroja iässä?
+t.test(Age ~ Country)
 
-# 2) Faktorilataukset:
-library(plot.matrix)
-plot(loadings(fa4), cex=0.5, axis.row = list(side=2, las=1))
-# IWRD_TOT lataa ML3:lle 0.22, kuten alkuperäisartikkelissa.
+# Tarkista asuinmaakohtainen sukupuolijakauma:
+table(Gender, Country)
 
-# 3) Muuttujien kommunaliteetit:
-fa4$communality
-# Kommunaliteetit <.3: 
-# ListSort 0.28, IWRD_TOT 0.096
-# ListSort vielä kohtuullisen rajoissa, mutta
-# IWRD_TOT sopii malliin huonosti.
-
-# 4) Faktoreiden selittämä varianssi:
-# Faktorimallin selitysosuus: 45%
-# Yksittäisten faktorien selitysosuus:
-# ML1 14%, ML2 14%, ML4 9%, ML3 8%
-
-# 5) Faktoreiden nimeäminen
-# ML1: kristalloitunut älykkyys
-# ML2: prosessointinopeus
-# ML3: muisti
-# ML4: visuospatiaaliset kyvyt
-
-# -
-
-# Faktoriratkaisun tavoitteiden arviointi:
-
-# A) Faktorit selittävät yhteisvaihtelusta 45%, mikä on varsin suuri osuus.
-
-# B) Faktoreita on mahdollisimman vähän: vyörykuvion ja rinnakkaisanalyysin tulokset
-# olivat varsin selkeät ja tukivat 4 faktorin ratkaisua.
-
-# C) Malliin tulee mahdollisimman paljon pieniä ja suuria latauksia, keskinkertaisia vähän:
-# faktorit näyttävät erottuvan selkeästi latausmatriisin perusteella.
-
-# D) Faktoreille on mielekäs tulkinta: kognitiivisen kyvykkyyden teorioiden perusteella
-# faktorit oli helppo tulkita.
-
-# Kokonaisuudessaan malli näyttää hyvältä, mutta IWRD_TOT ei sovi malliin.
-# Eri määrä faktoreita ei vaikuta hyvältä ratkaisulta, koska rinnakkaisanalyysin perusteella
-# faktoreiden optimaalinen määrä oli niin selkeä.
-# Kokeillaan poistaa IWRD_TOT kokonaan:
-fa4.new <- fa(dubois[c(4:10,12:13)],
-          nfactor=4,
-          fm="ml",
-          max.iter=100,
-          rotate="oblimin"
-)
-
-# Tulokset:
-fa.diagram(fa4.new)
-fa4.new
-# Mallin sopivuus entistäkin parempi
-# Muuttujien kommunaliteetit paranevat: nyt kaikilla >.3
-# Mallin selitysaste paranee (49%)
-library(plot.matrix)
-plot(loadings(fa4.new), cex=0.5, axis.row = list(side=2, las=1))
-
-# Näiden tulosten perusteella harkitsisin muuttujan IWRD_TOT poistamista lopullisesti faktoriratkaisusta.
-#
+# Onko sukupuolijakauma sama eri asuinmaiden välillä?
+chisq.test(Gender, Country)
 
 # ---
 
-# 5. Faktorianalyysin raportointi
+# 3. Korrelaatiot
 
-# Kaikki tehtävämuuttujat korreloivat keskenään. Rinnakkaisanalyysin perusteella 
-# tehtävämuuttujat muodostivat neljäfaktoria, joten tehtävämuuttujien taustalla 
-# olevia latentteja faktoreita tutkittiin ekploratiivisella faktoriratkaisulla, jossa
-# faktoreiden määräksi valittiin neljä. Ekstraktointimenetelmänä käytettiin pääakselifaktorointia.
-# Rotatointimenetelmäksi valittiin vinokulmarotaatio, koska kognition eri osa-alueiden 
-# oletettiin korreloivan keskenään.
+# Korrelaatiomatriisi selittävien ja selitettävien muuttujien välillä.
+# Tarkista aineisto ja valitse oikea korrelaatiokerroin.
 
-# Neljän faktorin ratkaisu sopi malliin hyvin (khii2(11) = 14.77, p<.19; TLI = 0.99; RMSEA = 0.02).
-# Neljä faktoria voitiin tulkita 1) kristalloituneeksi kyvykkyydeksi (Vocab, ReadEng), 
-# 2) prosessointinopeudeksi (CardSort, Flanker, ProcSpeed), 3) visuospatiaaliseksi kyvykkyydeksi (VSPLOT, PMAT)
-# ja 4) muistiksi (PicSeq, ListSort). Yksittäisistä tehtävämuuttujista vain IWRD_TOT latautui faktoreille heikosti (kommunaliteetti = 0.098, kun
-# hyväksyttävän kommunaliteetin rajana voidaan pitää .3), joten faktorianalyysi ajettiin vielä ilman tätä
-# muuttujaa. Muuttujan jättäminen pois faktoriratkaisusta paransi mallin sopivuutta entisestään
-# (khii2(6) = 4.49, p<.6; TLI = 1.01; RMSEA = 0).
+# Tarkista jakaumat:
+par(mfrow=c(2,4))
+hist(greenspace$NatConnect)# vino, diskreetti
+hist(greenspace$NatEngage) # vino, diskreetti
+hist(greenspace$NatTime)   # vino
 
-# Neljän faktorin ratkaisu ilman IWRD_TOT-muuttujaa selitti yhteensä 49% tehtävissä suoriutumisen
-# vaihtelusta (yksittäisten faktoreiden selitysosuudet 8-16%).
+hist(greenspace$CHAOS)
+hist(greenspace$PCNB)
+hist(greenspace$WELLBEING) # hieman vino
+
+
+# Koska jakaumat ovat vinoja, käytetään Spearmanin korrelaatiokerrointa.
+
+corr.test(greenspace[c(5:7,35:37)], method="spearman")
+
+# ---
+
+# 4. Lineaarinen regressio
+
+# Luo malli, jossa ennustat hyvinvointia kaikilla luontomuuttujilla.
+# Mitkä luontomuuttujista ennustavat hyvinvointia merkitsevästi?
+# Mikä on mallin kokonaisselitysaste?
+
+malli <- lm(WELLBEING ~ NatConnect + NatEngage + NatTime) 
+plot(malli) # oletukset ok
+library(car)
+vif(malli) # multikollineaarisuus ok
+summary(malli)
+
+# Luontomuuttujista luontoyhteys (beta=0.52) ja vuorovaikutus luonnon kanssa (beta=0.70) ennustavat merkitsevästi
+# hyvinvointia.
+# Malli sopii aineistoon (F(3,531)=12.55, p<.0001) ja luontomuuttujat selittävät yhteensä 6% hyvinvoinnin
+# vaihtelusta.
+
 
 
