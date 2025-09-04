@@ -1,8 +1,8 @@
 # R-harjoitusmoniste R1.1:
 # R:n perusteet
-# PSY204 syksy 2024
+# PSY204 syksy 2025
 # Mallivastaukset
-# Heini Saarimäki 23.8.2024
+# Heini Saarimäki 4.9.2025
 
 # -----
 
@@ -227,3 +227,4 @@ sum(AgeWeight$WEIGHT)	# tai datakehyksen muuttujaa käyttäen
 install.package('psych')
 # 2. lataa kirjasto työskentelysessiosi käyttöön
 library('psych')
+
