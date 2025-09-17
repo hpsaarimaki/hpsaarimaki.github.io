@@ -1,7 +1,7 @@
 # PSY204
-# R-harjoitusmoniste R2.1
+# R-harjoitusmoniste R3.1
 # Mallivastaukset
-# Heini Saarimäki 4.9.2024
+# Heini Saarimäki 17.9.2025
 
 # -----
 
