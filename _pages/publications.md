@@ -24,7 +24,7 @@ Zhai M, **Saarimäki H**, Hietanen JK. (2025) The perception of eye contact is a
 
 Ranta K, **Saarimäki H**, Gummerus J, Virtanen J, Peltomäki S, Kontu E. (2024) Psychological interventions for parents of children with intellectual disabilities to enhance child behavioral outcomes or parental well-being: A systematic review, content analysis and effects. Journal of Intellectual Disabilities. https://doi.org/10.1177/174462952413028.
 
-Rinne P, Lahnakoski JM, **Saarimäki H**, Tavast M, Sams M, Henriksson L. Six types of loves differentially recruit reward and social cognition brain areas. Cerebral Cortex 34:8. https://doi.org/10.1093/cercor/bhae331
+Rinne P, Lahnakoski JM, **Saarimäki H**, Tavast M, Sams M, Henriksson L. (2024) Six types of loves differentially recruit reward and social cognition brain areas. Cerebral Cortex 34:8. https://doi.org/10.1093/cercor/bhae331
 
 Keles U, Kliemann D, Byrge L, **Saarimäki H**, Paul LK, Kennedy DP, Adolphs R. (2022) Atypical gaze patterns in autistic adults are heterogeneous across but reliable within individuals. Molecular Autism 13:39. https://doi.org/10.1186/s13229-022-00517-2
 
