@@ -17,6 +17,7 @@ redirect_from:
 
 ## Employment
 
+2022-       **University Instructor (Statistical and Research Methods)**, Psychology, Faculty of Social Sciences, Tampere University, Finland <br> 
 2019-2022   **Academy of Finland Postdoctoral Fellow**, Human Information Processing Laboratory, Tampere University, Finland <br>
 2019-2020   **Visiting Scholar**, Emotion and Social Cognition Lab, California Institute of Technology, USA <br>
 2018-2020   **Visiting Postdoctoral Scientist**, Brain and Mind Lab, Aalto University, Finland <br>
@@ -29,6 +30,7 @@ redirect_from:
 
 ## Awards and funding
 
+2024        Annual Teaching Award, Faculty of Social Sciences, Tampere University, Finland <br>
 2019        Postdoctoral Fellowship, Academy of Finland, 36 months <br>
 2019        Marie Sklodowska-Curie Actions Seal of Excellence <br>
 2016        Personal grant, Kordelin Foundation, 12 months <br>
