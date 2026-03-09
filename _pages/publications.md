@@ -10,6 +10,8 @@ You can also find my articles on <u><a href="{{author.googlescholar}}">my Google
 
 ## Peer-reviewed publications and book chapters
 
+Akhundzadeh R, **Saarimäki H**. (2026) Everyday emotions and urban coexistence: An experimental journey into the psychophysiology of lived experience. In Puumala E, Pehkonen S (eds.) Coexistence in the Urban Everyday: Interdisciplinary Perspectives Toward New Understandings. Routledge Studies in Urban Sociology. UK:Taylor & Francis.
+
 **Saarimäki H**, Saaristo V, Kylliäinen A. (2026) Sosiaaliset ja emotionaaliset videot lasten tunnereaktioiden ja sosiaalisen havaitsemisen tutkimuksessa. Kasvun tuki -aikakauslehti. (Accepted for publication.) 
 
 Vierikko E, **Saarimäki H**, Rantanen K. (2026) Relationships between executive functioning and self-concept in children referred for neuropsychological group rehabilitation and typically developing children. Journal or Neuropsychology. http://doi.org/10.1111/jnp.70029
